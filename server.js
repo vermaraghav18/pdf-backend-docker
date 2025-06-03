@@ -7,6 +7,10 @@ app.use(cors());
 const mergePdfRoute = require('./routes/mergePdf');
 app.use('/api/merge', mergePdfRoute);
 
+const splitPdfRoute = require('./routes/splitPdf');
+app.use('/api/split', splitPdfRoute);
+
+
 const PORT = process.env.PORT || 10000;
 
 app.get('/', (req, res) => {
