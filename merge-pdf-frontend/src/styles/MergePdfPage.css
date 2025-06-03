@@ -1,0 +1,27 @@
+.merge-container {
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 20px;
+  text-align: center;
+  font-family: sans-serif;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.merge-container input,
+.merge-container button {
+  margin-top: 12px;
+  display: block;
+  width: 100%;
+}
+
+button {
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #1e90ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

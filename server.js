@@ -1,6 +1,9 @@
 // server.js
 const express = require('express');
 const app = express();
+const cors = require('cors');
+app.use(cors());
+
 const mergePdfRoute = require('./routes/mergePdf');
 app.use('/api/merge', mergePdfRoute);
 
