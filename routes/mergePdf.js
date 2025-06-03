@@ -1,16 +1,5 @@
-// server.js
-const express = require('express');
-const app = express();
-const mergePdfRoute = require('./routes/mergePdf');
-app.use('/api/merge', mergePdfRoute);
-
-const PORT = process.env.PORT || 10000;
-
-app.get('/', (req, res) => {
-  res.send('✅ Simple backend is running!');
-});
-
 // routes/mergePdf.js
+const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
@@ -55,9 +44,3 @@ router.post('/', upload.array('pdfs', 2), async (req, res) => {
 });
 
 module.exports = router;
-
-
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
