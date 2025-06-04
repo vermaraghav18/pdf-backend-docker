@@ -23,7 +23,8 @@ const convertExcelToPdfRouter = require('./routes/convertExcelToPdf');
 const convertPdfToPptRoute = require('./routes/convertPdfToPpt');
 const convertPptToPdfRoute = require('./routes/convertPptToPdf');
 const rotatePdfRoute = require('./routes/rotatePdf');
-const protectPdfRoute = require('./routes/protectPdf');
+const organizePdfRoute = require('./routes/organizePdf');
+
 
 
 
@@ -51,10 +52,11 @@ app.use('/api/pdf-to-ppt', convertPdfToPptRoute);
 console.log('✅ /api/pdf-to-ppt mounted');
 app.use('/api/ppt-to-pdf', convertPptToPdfRoute);
 console.log('✅ /api/ppt-to-pdf mounted');
-app.use('/api/protect-pdf', protectPdfRoute);
-console.log('✅ /api/protect-pdf mounted');
 app.use('/api/rotate', rotatePdfRoute);
 console.log('✅ /api/rotate mounted');
+app.use('/api/organize', organizePdfRoute);
+console.log('✅ /api/organize mounted');
+
 
 
 // ✅ Test Route
