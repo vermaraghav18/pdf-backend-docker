@@ -4,6 +4,7 @@ const fs = require('fs');
 const { fromPath } = require('pdf2pic');
 const upload = require('./uploadMiddleware');
 const archiver = require('archiver');
+const { PDFDocument } = require('pdf-lib');
 
 const router = express.Router();
 
@@ -12,10 +13,14 @@ router.post('/', upload.single('file'), async (req, res) => {
     const inputPath = req.file.path;
     const baseName = path.basename(inputPath, '.pdf');
     const outputDir = path.join(__dirname, '..', 'outputs', baseName + '-' + Date.now());
-
     fs.mkdirSync(outputDir, { recursive: true });
 
-    // Convert using pdf2pic
+    // 🧠 Get total pages using pdf-lib
+    const pdfBuffer = fs.readFileSync(inputPath);
+    const pdfDoc = await PDFDocument.load(pdfBuffer);
+    const totalPages = pdfDoc.getPageCount();
+
+    // Convert with pdf2pic
     const converter = fromPath(inputPath, {
       density: 100,
       saveFilename: 'page',
@@ -25,8 +30,6 @@ router.post('/', upload.single('file'), async (req, res) => {
       height: 1000
     });
 
-    const totalPages = await converter(1, true).then(info => info.numpages);
-
     const conversionPromises = [];
     for (let i = 1; i <= totalPages; i++) {
       conversionPromises.push(converter(i));
@@ -34,7 +37,7 @@ router.post('/', upload.single('file'), async (req, res) => {
 
     await Promise.all(conversionPromises);
 
-    // Zip the outputDir
+    // Create ZIP
     const zipPath = `${outputDir}.zip`;
     const output = fs.createWriteStream(zipPath);
     const archive = archiver('zip');
