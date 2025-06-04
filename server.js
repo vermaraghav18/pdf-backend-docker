@@ -2,13 +2,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Allow local dev frontend
-  methods: ['GET', 'POST'],
-  credentials: true
-}));
-
+app.use(cors());
 
 const mergePdfRoute = require('./routes/mergePdf');
 const splitPdfRoute = require('./routes/splitPdf');
