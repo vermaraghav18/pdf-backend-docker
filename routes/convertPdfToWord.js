@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const pdfParse = require('pdf-parse');
 const { Document, Packer, Paragraph } = require('docx');
-const upload = require('./uploadMiddleware');
+const { upload } = require('./uploadMiddleware');
 
 const router = express.Router();
 

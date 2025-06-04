@@ -26,7 +26,7 @@ function PdfToWordPage() {
 
     try {
       const response = await axios.post(
-        'https://simple-backend-sejz.onrender.com/api/pdf-to-word',
+        'https://simple-backend-c67l.onrender.com/api/pdf-to-word',
         formData,
         { responseType: 'blob' }
       );

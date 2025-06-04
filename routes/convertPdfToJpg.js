@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const { fromPath } = require('pdf2pic');
-const upload = require('./uploadMiddleware');
+const { upload } = require('./uploadMiddleware');
 const archiver = require('archiver');
 const { PDFDocument } = require('pdf-lib');
 

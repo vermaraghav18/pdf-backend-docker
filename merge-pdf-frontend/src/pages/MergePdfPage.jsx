@@ -8,7 +8,9 @@ function MergePdfPage() {
   const [message, setMessage] = useState('');
 
   const handleFileChange = (e) => {
-    setFiles(Array.from(e.target.files));
+    const selected = Array.from(e.target.files);
+    setFiles(selected);
+    setMessage(selected.length ? `📂 Selected ${selected.length} files` : '');
   };
 
   const handleMerge = async () => {
@@ -22,25 +24,28 @@ function MergePdfPage() {
 
     setLoading(true);
     setMessage('📡 Merging PDFs...');
-
+    
     try {
       const response = await axios.post(
-        'https://simple-backend-sejz.onrender.com/api/merge',
+        'https://simple-backend-c67l.onrender.com/api/merge', // ✅ Corrected URL
         formData,
         { responseType: 'blob' }
       );
+
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = 'merged.pdf';
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
 
       setMessage('✅ Merge complete. File downloaded!');
-    } catch (err) {
+    } catch (error) {
+      console.error('Merge failed:', error);
       setMessage('❌ Merge failed.');
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -49,7 +54,12 @@ function MergePdfPage() {
   return (
     <div className="merge-container">
       <h2>🧩 Merge PDF Files</h2>
-      <input type="file" multiple accept="application/pdf" onChange={handleFileChange} />
+      <input
+        type="file"
+        multiple
+        accept="application/pdf"
+        onChange={handleFileChange}
+      />
       <button onClick={handleMerge} disabled={loading}>
         {loading ? 'Merging...' : 'Merge PDFs'}
       </button>

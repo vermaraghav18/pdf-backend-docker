@@ -9,6 +9,10 @@ import PdfToWordPage from './pages/PdfToWordPage';
 import WordToPdfPage from './pages/WordToPdfPage';
 import PdfToExcelPage from './pages/PdfToExcelPage'; // ✅ New Import
 import ExcelToPdfPage from './pages/ExcelToPdfPage'; // ✅ New Import
+import PdfToPptPage from './pages/PdfToPptPage'; // ✅ New Import
+import RotatePdfPage from './pages/RotatePdfPage'; // ✅ Add this import
+import PptToPdfPage from './pages/PptToPdfPage'; // ✅ New
+
 
 function App() {
   return (
@@ -25,7 +29,11 @@ function App() {
           <Link to="/pdf-to-word" style={{ marginRight: '1rem' }}>PDF to Word</Link>
           <Link to="/word-to-pdf" style={{ marginRight: '1rem' }}>Word to PDF</Link>
           <Link to="/pdf-to-excel" style={{ marginRight: '1rem' }}>PDF to Excel</Link> {/* ✅ New Link */}
-          <Link to="/excel-to-pdf">Excel to PDF</Link> {/* ✅ New Link */}
+          <Link to="/excel-to-pdf" style={{ marginRight: '1rem' }}>Excel to PDF</Link> {/* ✅ New Link */}
+          <Link to="/pdf-to-ppt" style={{ marginRight: '1rem' }}>PDF to PPT</Link>
+          <Link to="/rotate" style={{ marginRight: '1rem' }}>Rotate Pdf</Link>
+           <Link to="/ppt-to-pdf" style={{ marginRight: '1rem' }}>PPT to PDF</Link> {/* ✅ */}
+
         </nav>
 
         <Routes>
@@ -38,6 +46,10 @@ function App() {
           <Route path="/word-to-pdf" element={<WordToPdfPage />} />
           <Route path="/pdf-to-excel" element={<PdfToExcelPage />} /> {/* ✅ New Route */}
           <Route path="/excel-to-pdf" element={<ExcelToPdfPage />} /> {/* ✅ New Route */}
+          <Route path="/pdf-to-ppt" element={<PdfToPptPage />} /> {/* ✅ New Route */}
+          <Route path="/rotate" element={<RotatePdfPage />} /> // ✅ Add inside 
+           <Route path="/ppt-to-pdf" element={<PptToPdfPage />} /> {/* ✅ */}
+
         </Routes>
       </div>
     </Router>

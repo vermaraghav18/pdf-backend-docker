@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const mammoth = require('mammoth');
 const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
-const upload = require('./uploadMiddleware');
+const { upload } = require('./uploadMiddleware');
 
 const router = express.Router();
 

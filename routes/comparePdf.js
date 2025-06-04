@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const upload = require('./uploadMiddleware');
+const { upload } = require('./uploadMiddleware');
 const pdfParse = require('pdf-parse');
 const stringSimilarity = require('string-similarity');
 

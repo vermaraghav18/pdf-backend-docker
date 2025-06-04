@@ -30,7 +30,7 @@ function ExcelToPdfPage() {
 
     try {
       const response = await axios.post(
-        'https://simple-backend-sejz.onrender.com/api/excel-to-pdf',
+        'https://simple-backend-c67l.onrender.com/api/excel-to-pdf',
         formData,
         { responseType: 'blob' }
       );

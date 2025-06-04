@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles/ComponentStyles.css';
 
-function PdfToExcelPage() {
+function PdfToPptPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -11,39 +11,38 @@ function PdfToExcelPage() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedFile(file);
-    setMessage(file ? `📂 Selected file: ${file.name}` : '');
+    setMessage(file ? `📂 Selected: ${file.name}` : '');
     setDownloadUrl(null);
   };
 
   const handleConvertClick = async () => {
     if (!selectedFile) {
-      setMessage('❌ Please select a PDF file to convert.');
+      setMessage('❌ Please select a PDF file.');
       return;
     }
 
     setLoading(true);
-    setMessage('⏳ Converting PDF to Excel...');
-    setDownloadUrl(null);
+    setMessage('⏳ Converting to PowerPoint...');
 
     const formData = new FormData();
     formData.append('file', selectedFile);
 
     try {
       const response = await axios.post(
-  'https://simple-backend-c67l.onrender.com/api/pdf-to-excel', // ✅ Corrected URL
-  formData,
-  { responseType: 'blob' }
-);
-
+        'https://simple-backend-c67l.onrender.com/api/pdf-to-ppt',
+        formData,
+        { responseType: 'blob' }
+      );
 
       const blob = new Blob([response.data], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       });
+
       const url = window.URL.createObjectURL(blob);
       setDownloadUrl(url);
-      setMessage('✅ Conversion complete! Click below to download.');
+      setMessage('✅ Conversion complete! Download your PPT below.');
     } catch (error) {
-      setMessage('❌ Error converting PDF to Excel.');
+      setMessage('❌ Conversion failed.');
       console.error(error);
     }
 
@@ -52,19 +51,19 @@ function PdfToExcelPage() {
 
   return (
     <div className="tool-page">
-      <h2>📄 Convert PDF to Excel</h2>
+      <h2>📄 Convert PDF to PowerPoint</h2>
       <input type="file" accept=".pdf" onChange={handleFileChange} className="file-input" />
       <button onClick={handleConvertClick} disabled={loading} className="btn">
-        {loading ? 'Converting...' : 'Convert to Excel'}
+        {loading ? 'Converting...' : 'Convert to PPT'}
       </button>
       <p className="status-message">{message}</p>
       {downloadUrl && !loading && (
-        <a href={downloadUrl} download="converted.xlsx" className="download-link">
-          ⬇️ Download Excel File
+        <a href={downloadUrl} download="converted.pptx" className="download-link">
+          ⬇️ Download PPTX File
         </a>
       )}
     </div>
   );
 }
 
-export default PdfToExcelPage;
+export default PdfToPptPage;

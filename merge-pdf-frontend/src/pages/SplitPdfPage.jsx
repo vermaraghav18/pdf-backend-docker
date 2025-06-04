@@ -30,7 +30,7 @@ function SplitPdfPage() {
 
     try {
       const response = await axios.post(
-        'https://simple-backend-sejz.onrender.com/api/split',
+        'https://simple-backend-c67l.onrender.com/api/split',
         formData,
         { responseType: 'blob' }
       );

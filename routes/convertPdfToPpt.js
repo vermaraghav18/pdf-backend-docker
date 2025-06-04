@@ -1,4 +1,3 @@
-// routes/convertPdfToPpt.js
 const express = require('express');
 const fs = require('fs');
 const os = require('os');
@@ -9,7 +8,6 @@ const pptxgen = require('pptxgenjs');
 
 const router = express.Router();
 
-// ✅ Use OS temp dir for compatibility
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, os.tmpdir()),
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
@@ -18,8 +16,7 @@ const upload = multer({ storage });
 
 router.post('/', upload.single('file'), async (req, res) => {
   try {
-    const filePath = path.join(os.tmpdir(), req.file.filename); // ✅ Correct reference
-
+    const filePath = path.join(os.tmpdir(), req.file.filename);
     const pdfBuffer = fs.readFileSync(filePath);
     const pdfData = await pdfParse(pdfBuffer);
 
@@ -33,8 +30,9 @@ router.post('/', upload.single('file'), async (req, res) => {
       slide.addText(chunk, { x: 0.5, y: 0.5, w: '90%', h: '90%' });
     }
 
+    const pptxBuffer = await pptx.write('nodebuffer');
     const outPath = path.join(os.tmpdir(), `converted-${Date.now()}.pptx`);
-    await pptx.writeFile({ fileName: outPath });
+    fs.writeFileSync(outPath, pptxBuffer);
 
     res.download(outPath, () => {
       fs.unlinkSync(filePath);
