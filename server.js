@@ -20,6 +20,9 @@ const convertPdfToWordRoute = require('./routes/convertPdfToWord');
 const convertWordToPdfRoute = require('./routes/convertWordToPdf');
 const convertPdfToExcelRouter = require('./routes/convertPdfToExcel');
 const convertExcelToPdfRouter = require('./routes/convertExcelToPdf');
+const convertPdfToPptRoute = require('./routes/convertPdfToPpt');
+
+
 
 // ✅ Mount Routes
 app.use('/api/pdf-to-excel', convertPdfToExcelRouter);
@@ -40,6 +43,8 @@ app.use('/api/merge', mergePdfRoute);
 console.log('✅ /api/merge mounted');
 app.use('/api/split', splitPdfRoute);
 console.log('✅ /api/split mounted');
+app.use('/api/pdf-to-ppt', convertPdfToPptRoute);
+console.log('✅ /api/pdf-to-ppt mounted');
 
 // ✅ Test Route
 app.get('/', (req, res) => {
