@@ -23,14 +23,23 @@ const convertExcelToPdfRouter = require('./routes/convertExcelToPdf');
 
 // ✅ Mount Routes
 app.use('/api/pdf-to-excel', convertPdfToExcelRouter);
+console.log('✅ /api/pdf-to-excel mounted');
 app.use('/api/excel-to-pdf', convertExcelToPdfRouter);
+console.log('✅ /api/excel-to-pdf mounted');
 app.use('/api/word-to-pdf', convertWordToPdfRoute);
+console.log('✅ /api/word-to-pdf mounted');
 app.use('/api/pdf-to-word', convertPdfToWordRoute);
+console.log('✅ /api/pdf-to-word mounted');
 app.use('/api/pdf-to-jpg', convertPdfToJpgRoute);
+console.log('✅ /api/pdf-to-jpg mounted');
 app.use('/api/compare', comparePdfRoute);
+console.log('✅ /api/compare mounted');
 app.use('/api/compress', compressPdfRoute);
+console.log('✅ /api/compress mounted');
 app.use('/api/merge', mergePdfRoute);
+console.log('✅ /api/merge mounted');
 app.use('/api/split', splitPdfRoute);
+console.log('✅ /api/split mounted');
 
 // ✅ Test Route
 app.get('/', (req, res) => {
