@@ -12,7 +12,7 @@ import ExcelToPdfPage from './pages/ExcelToPdfPage'; // ✅ New Import
 import PdfToPptPage from './pages/PdfToPptPage'; // ✅ New Import
 import RotatePdfPage from './pages/RotatePdfPage'; // ✅ Add this import
 import PptToPdfPage from './pages/PptToPdfPage'; // ✅ New
-
+import OrganizePdfPage from './pages/OrganizePdfPage';
 
 function App() {
   return (
@@ -33,6 +33,8 @@ function App() {
           <Link to="/pdf-to-ppt" style={{ marginRight: '1rem' }}>PDF to PPT</Link>
           <Link to="/rotate" style={{ marginRight: '1rem' }}>Rotate Pdf</Link>
            <Link to="/ppt-to-pdf" style={{ marginRight: '1rem' }}>PPT to PDF</Link> {/* ✅ */}
+           <Link to="/organize" style={{ marginRight: '1rem' }}>Organize PDF</Link>
+
 
         </nav>
 
@@ -49,6 +51,8 @@ function App() {
           <Route path="/pdf-to-ppt" element={<PdfToPptPage />} /> {/* ✅ New Route */}
           <Route path="/rotate" element={<RotatePdfPage />} /> // ✅ Add inside 
            <Route path="/ppt-to-pdf" element={<PptToPdfPage />} /> {/* ✅ */}
+           <Route path="/organize" element={<OrganizePdfPage />} />
+
 
         </Routes>
       </div>
