@@ -9,7 +9,9 @@ const splitPdfRoute = require('./routes/splitPdf');
 const compressPdfRoute = require('./routes/compressPdf');
 const comparePdfRoute = require('./routes/comparePdf');
 const convertPdfToJpgRoute = require('./routes/convertPdfToJpg');
+const convertPdfToWordRoute = require('./routes/convertPdfToWord');
 
+app.use('/api/pdf-to-word', convertPdfToWordRoute);
 app.use('/api/pdf-to-jpg', convertPdfToJpgRoute);
 app.use('/api/compare', comparePdfRoute);
 app.use('/api/compress', compressPdfRoute);
