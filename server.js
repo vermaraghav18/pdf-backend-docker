@@ -11,7 +11,11 @@ const comparePdfRoute = require('./routes/comparePdf');
 const convertPdfToJpgRoute = require('./routes/convertPdfToJpg');
 const convertPdfToWordRoute = require('./routes/convertPdfToWord');
 const convertWordToPdfRoute = require('./routes/convertWordToPdf');
+const convertPdfToExcel = require('./routes/convertPdfToExcel');
+const convertExcelToPdf = require('./routes/convertExcelToPdf');
 
+app.use('/api/pdf-to-excel', convertPdfToExcel);
+app.use('/api/excel-to-pdf', convertExcelToPdf);
 app.use('/api/word-to-pdf', convertWordToPdfRoute);
 app.use('/api/pdf-to-word', convertPdfToWordRoute);
 app.use('/api/pdf-to-jpg', convertPdfToJpgRoute);
