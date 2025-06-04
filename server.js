@@ -2,7 +2,13 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-app.use(cors());
+
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Allow local dev frontend
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
+
 
 const mergePdfRoute = require('./routes/mergePdf');
 const splitPdfRoute = require('./routes/splitPdf');
@@ -11,11 +17,11 @@ const comparePdfRoute = require('./routes/comparePdf');
 const convertPdfToJpgRoute = require('./routes/convertPdfToJpg');
 const convertPdfToWordRoute = require('./routes/convertPdfToWord');
 const convertWordToPdfRoute = require('./routes/convertWordToPdf');
-const convertPdfToExcel = require('./routes/convertPdfToExcel');
-const convertExcelToPdf = require('./routes/convertExcelToPdf');
+const convertPdfToExcelRouter = require('./routes/convertPdfToExcel');
+const convertExcelToPdfRouter = require('./routes/convertExcelToPdf');
 
-app.use('/api/pdf-to-excel', convertPdfToExcel);
-app.use('/api/excel-to-pdf', convertExcelToPdf);
+app.use('/api/pdf-to-excel', convertPdfToExcelRouter);
+app.use('/api/excel-to-pdf', convertExcelToPdfRouter);
 app.use('/api/word-to-pdf', convertWordToPdfRoute);
 app.use('/api/pdf-to-word', convertPdfToWordRoute);
 app.use('/api/pdf-to-jpg', convertPdfToJpgRoute);

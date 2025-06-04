@@ -5,7 +5,10 @@ import SplitPdfPage from './pages/SplitPdfPage';
 import CompressPdfPage from './pages/CompressPdfPage';
 import ComparePdfPage from './pages/ComparePdfPage';
 import PdfToJpgPage from './pages/PdfToJpgPage';
-import PdfToWordPage from './pages/PdfToWordPage'; // ✅ New Import
+import PdfToWordPage from './pages/PdfToWordPage';
+import WordToPdfPage from './pages/WordToPdfPage';
+import PdfToExcelPage from './pages/PdfToExcelPage'; // ✅ New Import
+import ExcelToPdfPage from './pages/ExcelToPdfPage'; // ✅ New Import
 
 function App() {
   return (
@@ -19,7 +22,10 @@ function App() {
           <Link to="/compress" style={{ marginRight: '1rem' }}>Compress PDF</Link>
           <Link to="/compare" style={{ marginRight: '1rem' }}>Compare PDF</Link>
           <Link to="/pdf-to-jpg" style={{ marginRight: '1rem' }}>PDF to JPG</Link>
-          <Link to="/pdf-to-word">PDF to Word</Link> {/* ✅ New Link */}
+          <Link to="/pdf-to-word" style={{ marginRight: '1rem' }}>PDF to Word</Link>
+          <Link to="/word-to-pdf" style={{ marginRight: '1rem' }}>Word to PDF</Link>
+          <Link to="/pdf-to-excel" style={{ marginRight: '1rem' }}>PDF to Excel</Link> {/* ✅ New Link */}
+          <Link to="/excel-to-pdf">Excel to PDF</Link> {/* ✅ New Link */}
         </nav>
 
         <Routes>
@@ -28,7 +34,10 @@ function App() {
           <Route path="/compress" element={<CompressPdfPage />} />
           <Route path="/compare" element={<ComparePdfPage />} />
           <Route path="/pdf-to-jpg" element={<PdfToJpgPage />} />
-          <Route path="/pdf-to-word" element={<PdfToWordPage />} /> {/* ✅ New Route */}
+          <Route path="/pdf-to-word" element={<PdfToWordPage />} />
+          <Route path="/word-to-pdf" element={<WordToPdfPage />} />
+          <Route path="/pdf-to-excel" element={<PdfToExcelPage />} /> {/* ✅ New Route */}
+          <Route path="/excel-to-pdf" element={<ExcelToPdfPage />} /> {/* ✅ New Route */}
         </Routes>
       </div>
     </Router>
