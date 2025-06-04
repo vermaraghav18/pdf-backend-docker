@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const { exec } = require('child_process');
+const { fromPath } = require('pdf2pic');
 const upload = require('./uploadMiddleware');
 const archiver = require('archiver');
 
@@ -13,42 +13,50 @@ router.post('/', upload.single('file'), async (req, res) => {
     const baseName = path.basename(inputPath, '.pdf');
     const outputDir = path.join(__dirname, '..', 'outputs', baseName + '-' + Date.now());
 
-    // Create output directory
     fs.mkdirSync(outputDir, { recursive: true });
 
-    // Convert PDF to JPG using pdf-poppler
-    const convertCommand = `pdftoppm "${inputPath}" "${outputDir}/page" -jpeg`;
-    exec(convertCommand, (error) => {
-      if (error) {
-        console.error('❌ Conversion failed:', error);
-        return res.status(500).json({ error: 'Conversion failed' });
-      }
-
-      // Create ZIP
-      const zipPath = `${outputDir}.zip`;
-      const output = fs.createWriteStream(zipPath);
-      const archive = archiver('zip');
-
-      output.on('close', () => {
-        res.download(zipPath, 'pdf-to-jpg.zip', () => {
-          // Cleanup
-          fs.unlinkSync(inputPath);
-          fs.rmSync(outputDir, { recursive: true, force: true });
-          fs.unlinkSync(zipPath);
-        });
-      });
-
-      archive.on('error', (err) => {
-        console.error('❌ Archiving error:', err);
-        res.status(500).send('Zip creation failed.');
-      });
-
-      archive.pipe(output);
-      archive.directory(outputDir, false);
-      archive.finalize();
+    // Convert using pdf2pic
+    const converter = fromPath(inputPath, {
+      density: 100,
+      saveFilename: 'page',
+      savePath: outputDir,
+      format: 'jpg',
+      width: 800,
+      height: 1000
     });
+
+    const totalPages = await converter(1, true).then(info => info.numpages);
+
+    const conversionPromises = [];
+    for (let i = 1; i <= totalPages; i++) {
+      conversionPromises.push(converter(i));
+    }
+
+    await Promise.all(conversionPromises);
+
+    // Zip the outputDir
+    const zipPath = `${outputDir}.zip`;
+    const output = fs.createWriteStream(zipPath);
+    const archive = archiver('zip');
+
+    output.on('close', () => {
+      res.download(zipPath, 'pdf-to-jpg.zip', () => {
+        fs.unlinkSync(inputPath);
+        fs.rmSync(outputDir, { recursive: true, force: true });
+        fs.unlinkSync(zipPath);
+      });
+    });
+
+    archive.on('error', (err) => {
+      console.error('❌ Archive error:', err);
+      res.status(500).send('Zip creation failed.');
+    });
+
+    archive.pipe(output);
+    archive.directory(outputDir, false);
+    archive.finalize();
   } catch (err) {
-    console.error('❌ Error:', err);
+    console.error('❌ PDF to JPG error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
