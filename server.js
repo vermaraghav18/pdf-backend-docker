@@ -24,6 +24,9 @@ const convertPdfToPptRoute = require('./routes/convertPdfToPpt');
 const convertPptToPdfRoute = require('./routes/convertPptToPdf');
 const rotatePdfRoute = require('./routes/rotatePdf');
 const organizePdfRoute = require('./routes/organizePdf');
+const repairPdfRoute = require('./routes/repairPdf');
+const addPageNumbersRoute = require('./routes/addPageNumbers');
+const redactPdfRoute = require('./routes/redactPdf');
 
 
 
@@ -56,6 +59,12 @@ app.use('/api/rotate', rotatePdfRoute);
 console.log('✅ /api/rotate mounted');
 app.use('/api/organize', organizePdfRoute);
 console.log('✅ /api/organize mounted');
+app.use('/api/repair', repairPdfRoute);
+console.log('✅ /api/repair mounted');
+app.use('/api/add-page-numbers', addPageNumbersRoute);
+console.log('✅ /api/add-page-numbers mounted');
+app.use('/api/redact', redactPdfRoute);
+console.log('✅ /api/redact mounted');
 
 
 

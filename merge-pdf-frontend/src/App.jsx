@@ -50,8 +50,8 @@ function App() {
           <Route path="/excel-to-pdf" element={<ExcelToPdfPage />} /> {/* ✅ New Route */}
           <Route path="/pdf-to-ppt" element={<PdfToPptPage />} /> {/* ✅ New Route */}
           <Route path="/rotate" element={<RotatePdfPage />} /> // ✅ Add inside 
-           <Route path="/ppt-to-pdf" element={<PptToPdfPage />} /> {/* ✅ */}
-           <Route path="/organize" element={<OrganizePdfPage />} />
+          <Route path="/ppt-to-pdf" element={<PptToPdfPage />} /> {/* ✅ */}
+          <Route path="/organize" element={<OrganizePdfPage />} />
 
 
         </Routes>

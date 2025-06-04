@@ -1,55 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 import '../styles/OrganizePdfPage.css';
 
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+
 function OrganizePdfPage() {
-  const [file, setFile] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null);
+  const [numPages, setNumPages] = useState(0);
+  const [pageImages, setPageImages] = useState([]);
+  const [operations, setOperations] = useState([]);
   const [message, setMessage] = useState('');
   const [downloadUrl, setDownloadUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    setPdfFile(file);
+    setOperations([]);
     setDownloadUrl('');
     setMessage('');
+
+    const fileReader = new FileReader();
+    fileReader.onload = async function () {
+      try {
+        const typedArray = new Uint8Array(this.result);
+        const pdf = await pdfjsLib.getDocument({ data: typedArray }).promise;
+        setNumPages(pdf.numPages);
+
+        const imgs = [];
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 0.4 });
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          await page.render({ canvasContext: context, viewport }).promise;
+          imgs.push(canvas.toDataURL());
+        }
+
+        setPageImages(imgs);
+      } catch (err) {
+        setMessage('❌ Failed to render PDF preview');
+        console.error(err);
+      }
+    };
+    fileReader.readAsArrayBuffer(file);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!file) {
-      alert("Please upload a PDF");
-      return;
-    }
+  const handleRotate = (index) => {
+    setOperations((prev) => [...prev, { type: 'rotate', pageIndex: index, rotate: 90 }]);
+    setMessage(`Page ${index + 1} marked for rotation`);
+  };
 
+  const handleDelete = (index) => {
+    setOperations((prev) => [...prev, { type: 'delete', pageIndex: index }]);
+    setMessage(`Page ${index + 1} marked for deletion`);
+  };
+
+  const handleDuplicate = (index) => {
+    setOperations((prev) => [...prev, { type: 'duplicate', pageIndex: index, times: 2 }]);
+    setMessage(`Page ${index + 1} will be duplicated`);
+  };
+
+  const handleSubmit = async () => {
+    if (!pdfFile) return alert("Please upload a PDF first.");
     const formData = new FormData();
-    formData.append('pdf', file);
-
-    // Sample operation: rotate page 0 by 180°
-    const operations = [
-      { type: 'rotate', pageIndex: 0, rotate: 180 }
-    ];
+    formData.append('pdf', pdfFile);
     formData.append('operations', JSON.stringify(operations));
 
     try {
       setLoading(true);
-      const response = await axios.post(
-        'https://simple-backend-c67l.onrender.com/api/organize',
+      const res = await axios.post(
+        'https://simple-backend-lfh7.onrender.com/api/organize',
         formData,
-        {
-          headers: {
-            // DO NOT manually set Content-Type — let browser handle it
-          },
-          responseType: 'blob',
-        }
+        { responseType: 'blob' }
       );
-
-      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const blob = new Blob([res.data], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
       setMessage('✅ Organized PDF is ready!');
     } catch (err) {
-      console.error('❌ Organize Error:', err);
-      setMessage('❌ Failed to process PDF. Server might be sleeping.');
+      console.error(err);
+      setMessage('❌ Failed to organize PDF');
     } finally {
       setLoading(false);
     }
@@ -57,16 +91,29 @@ function OrganizePdfPage() {
 
   return (
     <div className="organize-container">
-      <h2>Organize PDF</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="file" accept=".pdf" onChange={handleFileChange} />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Processing...' : 'Submit'}
+      <h2>🧩 Organize PDF</h2>
+      <input type="file" accept=".pdf" onChange={handleFileChange} />
+      <div className="thumbnail-grid">
+        {pageImages.map((img, index) => (
+          <div key={index} className="thumbnail-box">
+            <img src={img} alt={`Page ${index + 1}`} />
+            <div className="actions">
+              <button onClick={() => handleRotate(index)}>🔄</button>
+              <button onClick={() => handleDelete(index)}>❌</button>
+              <button onClick={() => handleDuplicate(index)}>➕</button>
+            </div>
+            <p>Page {index + 1}</p>
+          </div>
+        ))}
+      </div>
+      {pageImages.length > 0 && (
+        <button className="submit-btn" onClick={handleSubmit} disabled={loading}>
+          {loading ? 'Processing...' : 'Submit & Download'}
         </button>
-      </form>
+      )}
       <p>{message}</p>
       {downloadUrl && (
-        <a href={downloadUrl} download="organized.pdf">📥 Download PDF</a>
+        <a href={downloadUrl} download="organized.pdf" className="download-link">📥 Download PDF</a>
       )}
     </div>
   );
