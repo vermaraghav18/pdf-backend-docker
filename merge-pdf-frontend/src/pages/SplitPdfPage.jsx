@@ -4,28 +4,31 @@ import axios from 'axios';
 import '../styles/SplitPdfPage.css';
 
 function SplitPdfPage() {
-  const [pdfFile, setPdfFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [splitAfter, setSplitAfter] = useState('');
   const [message, setMessage] = useState('');
-  const [downloading, setDownloading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
-    setPdfFile(e.target.files[0]);
-    setMessage('');
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    setMessage(file ? `📂 Selected file: ${file.name}` : '');
   };
 
-  const handleSplit = async () => {
-    if (!pdfFile || !splitAfter) {
-      setMessage('❌ Please provide a file and split page number.');
+  const handleSplitClick = async () => {
+    if (!selectedFile || !splitAfter) {
+      setMessage('❌ Please select a PDF and enter a valid split page.');
       return;
     }
 
     const formData = new FormData();
-    formData.append('pdf', pdfFile);
+    formData.append('pdf', selectedFile);
     formData.append('splitAfter', splitAfter);
 
+    setLoading(true);
+    setMessage('🔧 Splitting PDF...');
+
     try {
-      setDownloading(true);
       const response = await axios.post(
         'https://simple-backend-sejz.onrender.com/api/split',
         formData,
@@ -34,23 +37,23 @@ function SplitPdfPage() {
 
       const blob = new Blob([response.data], { type: 'application/zip' });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'split-output.zip';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setMessage('✅ PDF successfully split and downloaded.');
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'split-parts.zip');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setMessage('✅ Split successful. Download started.');
     } catch (error) {
       console.error('Split error:', error);
       setMessage('❌ Split failed.');
     } finally {
-      setDownloading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="split-container">
+    <div className="tool-container">
       <h2>✂️ Split PDF File</h2>
       <input type="file" accept="application/pdf" onChange={handleFileChange} />
       <input
@@ -58,11 +61,12 @@ function SplitPdfPage() {
         placeholder="Split after page..."
         value={splitAfter}
         onChange={(e) => setSplitAfter(e.target.value)}
+        min={1}
       />
-      <button onClick={handleSplit} disabled={downloading}>
-        {downloading ? 'Splitting...' : 'Split PDF'}
+      <button onClick={handleSplitClick} disabled={loading}>
+        {loading ? 'Processing...' : 'Split PDF'}
       </button>
-      {message && <p>{message}</p>}
+      <p>{message}</p>
     </div>
   );
 }

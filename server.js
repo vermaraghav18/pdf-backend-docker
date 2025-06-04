@@ -5,9 +5,9 @@ const cors = require('cors');
 app.use(cors());
 
 const mergePdfRoute = require('./routes/mergePdf');
-app.use('/api/merge', mergePdfRoute);
-
 const splitPdfRoute = require('./routes/splitPdf');
+
+app.use('/api/merge', mergePdfRoute);
 app.use('/api/split', splitPdfRoute);
 
 

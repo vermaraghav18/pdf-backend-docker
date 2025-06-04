@@ -10,7 +10,7 @@ const router = express.Router();
 
 // 📁 Save in uploads/ (safe across Windows + Render)
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, '..', 'uploads')),
+  destination: (req, file, cb) => cb(null, '/tmp'),
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
 });
 const upload = multer({ storage });
@@ -41,7 +41,7 @@ router.post('/', upload.single('pdf'), async (req, res) => {
     copied2.forEach((page) => secondPdf.addPage(page));
 
     const timestamp = Date.now();
-    const outDir = path.join(__dirname, '..', 'uploads');
+    const outDir = '/tmp';
     const out1Path = path.join(outDir, `part1-${timestamp}.pdf`);
     const out2Path = path.join(outDir, `part2-${timestamp}.pdf`);
     fs.writeFileSync(out1Path, await firstPdf.save());
