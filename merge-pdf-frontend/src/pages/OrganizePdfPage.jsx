@@ -6,6 +6,7 @@ function OrganizePdfPage() {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
   const [downloadUrl, setDownloadUrl] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -15,32 +16,42 @@ function OrganizePdfPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) return alert("Please upload a PDF");
+    if (!file) {
+      alert("Please upload a PDF");
+      return;
+    }
 
     const formData = new FormData();
     formData.append('pdf', file);
 
-    // Example: rotate page 0 by 180°
+    // Sample operation: rotate page 0 by 180°
     const operations = [
       { type: 'rotate', pageIndex: 0, rotate: 180 }
     ];
-
     formData.append('operations', JSON.stringify(operations));
 
     try {
-      const res = await axios.post(
+      setLoading(true);
+      const response = await axios.post(
         'https://simple-backend-c67l.onrender.com/api/organize',
         formData,
-        { responseType: 'blob' }
+        {
+          headers: {
+            // DO NOT manually set Content-Type — let browser handle it
+          },
+          responseType: 'blob',
+        }
       );
 
-      const blob = new Blob([res.data], { type: 'application/pdf' });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
       setMessage('✅ Organized PDF is ready!');
     } catch (err) {
-      console.error(err);
-      setMessage('❌ Failed to process PDF.');
+      console.error('❌ Organize Error:', err);
+      setMessage('❌ Failed to process PDF. Server might be sleeping.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,7 +60,9 @@ function OrganizePdfPage() {
       <h2>Organize PDF</h2>
       <form onSubmit={handleSubmit}>
         <input type="file" accept=".pdf" onChange={handleFileChange} />
-        <button type="submit">Submit</button>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Processing...' : 'Submit'}
+        </button>
       </form>
       <p>{message}</p>
       {downloadUrl && (
