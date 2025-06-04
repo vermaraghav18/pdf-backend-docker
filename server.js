@@ -8,7 +8,9 @@ const mergePdfRoute = require('./routes/mergePdf');
 const splitPdfRoute = require('./routes/splitPdf');
 const compressPdfRoute = require('./routes/compressPdf');
 const comparePdfRoute = require('./routes/comparePdf');
+const convertPdfToJpgRoute = require('./routes/convertPdfToJpg');
 
+app.use('/api/pdf-to-jpg', convertPdfToJpgRoute);
 app.use('/api/compare', comparePdfRoute);
 app.use('/api/compress', compressPdfRoute);
 app.use('/api/merge', mergePdfRoute);
