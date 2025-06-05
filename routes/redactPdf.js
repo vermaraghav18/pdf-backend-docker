@@ -1,44 +1,36 @@
+// routes/redactPdf.js
 const express = require('express');
+const router = express.Router();
+const axios = require('axios');
+const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
-const { upload } = require('./uploadMiddleware');
-const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
+const FormData = require('form-data');
 
-const router = express.Router();
+// Setup multer
+const upload = multer({ dest: 'uploads/' });
 
 router.post('/', upload.single('pdf'), async (req, res) => {
   try {
-    const filePath = req.file.path;
-    const textToRedact = req.body.keyword || '';
+    const form = new FormData();
+    form.append('pdf', fs.createReadStream(req.file.path));
+    form.append('keywords', req.body.keywords);
 
-    const pdfBytes = fs.readFileSync(filePath);
-    const pdfDoc = await PDFDocument.load(pdfBytes);
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const microserviceURL = 'http://127.0.0.1:10001/redact';
 
-    const pages = pdfDoc.getPages();
-
-    for (const page of pages) {
-      const { width, height } = page.getSize();
-      page.drawRectangle({
-        x: 50,
-        y: height / 2,
-        width: 200,
-        height: 20,
-        color: rgb(0, 0, 0),
-      });
-    }
-
-    const redactedBytes = await pdfDoc.save();
-    const outputPath = path.join('uploads', `redacted-${Date.now()}.pdf`);
-    fs.writeFileSync(outputPath, redactedBytes);
-
-    res.download(outputPath, 'redacted.pdf', () => {
-      fs.unlinkSync(filePath);
-      fs.unlinkSync(outputPath);
+    const response = await axios.post(microserviceURL, form, {
+      headers: form.getHeaders(),
+      responseType: 'stream',
     });
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=redacted.pdf');
+    response.data.pipe(res);
+
+    fs.unlinkSync(req.file.path);
   } catch (err) {
-    console.error('Redact error:', err);
-    res.status(500).json({ error: 'Failed to redact PDF' });
+    console.error('❌ Redact error:', err.message);
+    res.status(500).send('Failed to redact PDF.');
   }
 });
 

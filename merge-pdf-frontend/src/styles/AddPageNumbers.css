@@ -1,0 +1,43 @@
+.tool-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #1e1e1e;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.6);
+  color: #fff;
+  text-align: center;
+}
+
+.tool-container input,
+.tool-container button {
+  margin: 1rem 0;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+}
+
+.tool-container input[type="file"] {
+  background: #2d2d2d;
+  color: #ddd;
+}
+
+.tool-container button {
+  background: #4caf50;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.tool-container button:hover {
+  background: #43a047;
+}
+
+.tool-container a {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #00ffcc;
+  text-decoration: none;
+  font-weight: bold;
+}
