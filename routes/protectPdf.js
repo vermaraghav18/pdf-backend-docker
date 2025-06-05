@@ -10,16 +10,17 @@ router.post('/', upload.single('file'), async (req, res) => {
     const filePath = req.file.path;
     const { password } = req.body;
 
-    // ✅ Add safety check
+    // ✅ Ensure file exists (especially for Render)
     if (!fs.existsSync(filePath)) {
-      return res.status(400).send('File not found on server');
+      return res.status(400).send('Uploaded file not found');
     }
 
     const formData = new FormData();
     formData.append('file', fs.createReadStream(filePath));
     formData.append('password', password);
 
-    const response = await axios.post('http://localhost:10002/', formData, {
+    // ✅ Use 127.0.0.1 instead of localhost (Render fix)
+    const response = await axios.post('http://127.0.0.1:10002/', formData, {
       headers: formData.getHeaders(),
       responseType: 'stream',
     });

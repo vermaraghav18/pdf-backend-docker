@@ -24,7 +24,7 @@ formData.append('left_percent', left_percent);
 formData.append('right_percent', right_percent);
 
 
-    const response = await axios.post('http://localhost:10004/', formData, {
+    const response = await axios.post('http://127.0.0.1:10004/', formData, {
       headers: formData.getHeaders(),
       responseType: 'stream',
     });

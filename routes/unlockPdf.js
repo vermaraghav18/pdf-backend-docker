@@ -14,7 +14,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     formData.append('file', fs.createReadStream(filePath));
     formData.append('password', password);
 
-    const response = await axios.post('http://localhost:10003/', formData, {
+    const response = await axios.post('http://127.0.0.1:10003/', formData, {
       headers: formData.getHeaders(),
       responseType: 'stream',
     });
