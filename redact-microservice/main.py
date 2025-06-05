@@ -27,8 +27,7 @@ async def redact_pdf(pdf: UploadFile, keywords: str = Form(...)):
                 for inst in text_instances:
                     page.add_redact_annot(inst, fill=(0, 0, 0))
 
-        doc.apply_redactions()
-        doc.save(output_filename)
+        doc.save(output_filename, redacted=True)
         doc.close()
 
         # ✅ Ensure OS releases file lock
