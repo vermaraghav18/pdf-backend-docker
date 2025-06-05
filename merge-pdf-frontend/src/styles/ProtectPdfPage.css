@@ -1,0 +1,15 @@
+.protect-pdf-container {
+  padding: 20px;
+  text-align: center;
+}
+
+.protect-pdf-container input {
+  margin: 10px;
+  padding: 8px;
+}
+
+.protect-pdf-container button {
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+}

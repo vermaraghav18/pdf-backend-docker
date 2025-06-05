@@ -24,7 +24,7 @@ function ComparePdfPage() {
 
     try {
       const response = await axios.post(
-        'https://simple-backend-c67l.onrender.com/api/compare',
+        'https://pdf-backend-docker.onrender.com/api/compare',
         formData
       );
       setResult(response.data);

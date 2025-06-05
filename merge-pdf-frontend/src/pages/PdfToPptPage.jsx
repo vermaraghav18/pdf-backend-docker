@@ -29,7 +29,7 @@ function PdfToPptPage() {
 
     try {
       const response = await axios.post(
-        'https://simple-backend-c67l.onrender.com/api/pdf-to-ppt',
+        'https://pdf-backend-docker.onrender.com/api/pdf-to-ppt',
         formData,
         { responseType: 'blob' }
       );

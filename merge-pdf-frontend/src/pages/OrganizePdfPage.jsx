@@ -73,7 +73,7 @@ function OrganizePdfPage() {
     try {
       setLoading(true);
       const res = await axios.post(
-        'https://simple-backend-lfh7.onrender.com/api/organize',
+        'https://pdf-backend-docker.onrender.com/api/organize',
         formData,
         { responseType: 'blob' }
       );

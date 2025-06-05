@@ -21,7 +21,7 @@ function RotatePdfPage() {
     formData.append('angle', angle);
     try {
       const response = await axios.post(
-        'https://simple-backend-c67l.onrender.com/api/rotate',
+        'https://pdf-backend-docker.onrender.com/api/rotate',
         formData,
         { responseType: 'blob' }
       );

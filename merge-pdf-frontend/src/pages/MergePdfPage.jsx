@@ -27,7 +27,7 @@ function MergePdfPage() {
     
     try {
       const response = await axios.post(
-        'https://simple-backend-lfh7.onrender.com/api/merge', // ✅ Corrected URL
+        'https://pdf-backend-docker.onrender.com/api/merge', // ✅ Corrected URL
         formData,
         { responseType: 'blob' }
       );

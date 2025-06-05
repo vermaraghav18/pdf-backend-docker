@@ -1,12 +1,11 @@
 # ================================
 # Dockerfile for unified backend
-# Runs both Node.js (server.js) and FastAPI (redact-microservice/main.py)
+# Runs Node.js + 2 FastAPI microservices
 # ================================
 
-# Base image with Python and Node.js support
 FROM python:3.10-slim AS base
 
-# Install Node.js & other required tools
+# Install Node.js 18 and tools
 RUN apt-get update && \
     apt-get install -y curl gnupg && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
@@ -14,36 +13,32 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
-
-# Copy all files
 COPY . .
 
-# =============================
-# Install Python dependencies
-# =============================
+# Install Python deps (each microservice)
 RUN pip install --upgrade pip && \
-    pip install -r redact-microservice/requirements.txt
+    pip install -r redact-microservice/requirements.txt && \
+    pip install -r protect-microservice/requirements.txt && \
+    pip install -r unlock-microservice/requirements.txt && \
+    pip install -r crop-microservice/requirements.txt
 
-# =============================
-# Install Node dependencies
-# =============================
-RUN cd /app && npm install
+# Install Node.js deps
+RUN npm install
 
-# =============================
-# Create a startup script
-# =============================
+# Optional environment flag for Render
+ENV RENDER=true
+
 RUN echo '#!/bin/sh' > start.sh && \
     echo 'uvicorn redact-microservice.main:app --host 0.0.0.0 --port 10001 &' >> start.sh && \
+    echo 'uvicorn protect-microservice.protect:app --host 0.0.0.0 --port 10002 &' >> start.sh && \
+    echo 'uvicorn unlock-microservice.unlock:app --host 0.0.0.0 --port 10003 &' >> start.sh && \
+    echo 'uvicorn crop-microservice.crop:app --host 0.0.0.0 --port 10004 &' >> start.sh && \
     echo 'node server.js' >> start.sh && \
     chmod +x start.sh
 
-    ENV RENDER=true
 
-    
-# Expose ports for both services
-EXPOSE 10000 10001
+EXPOSE 10000 10001 10002 10003 10004
 
-# Start both services
+
 CMD ["sh", "./start.sh"]

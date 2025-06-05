@@ -1,5 +1,7 @@
 node_modules
+uploads
 __pycache__
 *.pyc
-uploads
-temp_*.pdf
+*.pyo
+.DS_Store
+.env

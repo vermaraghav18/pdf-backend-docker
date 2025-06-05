@@ -14,7 +14,7 @@ function RedactPdfPage() {
     formData.append('pdf', file);
     formData.append('keywords', keywords);
     try {
-          const res = await axios.post('http://localhost:10000/api/redact', formData, {
+          const res = await axios.post('https://pdf-backend-docker.onrender.com/api/redact', formData, {
       responseType: 'blob'
     });
 

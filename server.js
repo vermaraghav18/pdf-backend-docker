@@ -27,8 +27,9 @@ const organizePdfRoute = require('./routes/organizePdf');
 const repairPdfRoute = require('./routes/repairPdf');
 const addPageNumbersRoute = require('./routes/addPageNumbers');
 const redactPdfRoute = require('./routes/redactPdf');
-
-
+const protectPdfRoute = require('./routes/protectPdf');
+const unlockPdfRoute = require('./routes/unlockPdf');
+const cropPdfRoute = require('./routes/cropPdf');
 
 
 
@@ -67,6 +68,13 @@ app.use('/api/add-page-numbers', addPageNumbersRoute);
 console.log('✅ /api/add-page-numbers mounted');
 app.use('/api/redact', redactPdfRoute);
 console.log('✅ /api/redact mounted');
+app.use('/api/protect', protectPdfRoute);
+console.log('✅ /api/protect mounted');
+app.use('/api/unlock', unlockPdfRoute);
+console.log('✅ /api/unlock mounted');
+app.use('/api/crop', cropPdfRoute);
+console.log('✅ /api/crop mounted');
+
 
 
 

@@ -16,6 +16,8 @@ import OrganizePdfPage from './pages/OrganizePdfPage';
 import RepairPdfPage from './pages/RepairPdfPage';
 import AddPageNumbers from './pages/AddPageNumbers';
 import RedactPdfPage from './pages/RedactPdfPage';
+import ProtectPdfPage from './pages/ProtectPdfPage';
+
 
 
 function App() {
@@ -41,6 +43,7 @@ function App() {
            <Link to="/repair" style={{ marginRight: '1rem' }}>Repair PDF</Link>
           <Link to="/add-page-numbers" style={{ marginRight: '1rem' }}>Add Page Numbers</Link>
           <Link to="/redact" style={{ marginRight: '1rem' }}>Redact PDF</Link>
+          <Link to="/protect-pdf" style={{ marginRight: '1rem' }}>Protect PDF</Link>
 
           
 
@@ -63,7 +66,7 @@ function App() {
           <Route path="/repair" element={<RepairPdfPage />} />
           <Route path="/add-page-numbers" element={<AddPageNumbers />} />
           <Route path="/redact" element={<RedactPdfPage />} />
-
+          <Route path="/protect-pdf" element={<ProtectPdfPage />} />
 
         </Routes>
       </div>

@@ -19,7 +19,7 @@ function AddPageNumbers() {
     formData.append('pdf', file);
     try {
       const res = await axios.post(
-        'https://simple-backend-lfh7.onrender.com/api/add-page-numbers',
+        'https://pdf-backend-docker.onrender.com/api/add-page-numbers',
         formData, { responseType: 'blob' }
       );
       const blob = new Blob([res.data], { type: 'application/pdf' });

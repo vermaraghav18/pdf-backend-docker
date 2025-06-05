@@ -26,7 +26,7 @@ function PdfToJpgPage() {
 
     try {
       const response = await axios.post(
-        'https://simple-backend-c67l.onrender.com/api/pdf-to-jpg',
+        'https://pdf-backend-docker.onrender.com/api/pdf-to-jpg',
         formData,
         { responseType: 'blob' }
       );
