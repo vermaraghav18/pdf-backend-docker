@@ -16,7 +16,7 @@ router.post('/', upload.single('pdf'), async (req, res) => {
     form.append('pdf', fs.createReadStream(req.file.path));
     form.append('keywords', req.body.keywords);
 
-    const microserviceURL = 'http://localhost:10001/redact';
+    const microserviceURL = 'http://127.0.0.1:10001/redact';
 
 
     const response = await axios.post(microserviceURL, form, {
