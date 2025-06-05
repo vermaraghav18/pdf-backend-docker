@@ -39,6 +39,9 @@ RUN echo '#!/bin/sh' > start.sh && \
     echo 'node server.js' >> start.sh && \
     chmod +x start.sh
 
+    ENV RENDER=true
+
+    
 # Expose ports for both services
 EXPOSE 10000 10001
 
