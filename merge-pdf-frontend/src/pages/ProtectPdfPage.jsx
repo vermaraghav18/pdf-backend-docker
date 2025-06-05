@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles/ProtectPdfPage.css';
 
+const BASE_URL =
+  import.meta.env.MODE === 'development'
+    ? 'http://localhost:10000'
+    : 'https://your-backend.onrender.com';
+
 function ProtectPdfPage() {
   const [file, setFile] = useState(null);
   const [password, setPassword] = useState('');
@@ -20,11 +25,10 @@ function ProtectPdfPage() {
     formData.append('password', password);
 
     try {
-      const response = await axios.post(
-        'https://your-backend.onrender.com/api/protect',  // change to localhost:10000/api/protect for local testing
-        formData,
-        { responseType: 'blob' }
-      );
+    const response = await axios.post(`${BASE_URL}/api/protect`, formData, {
+      responseType: 'blob',
+    });
+
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const link = document.createElement('a');
@@ -42,7 +46,12 @@ function ProtectPdfPage() {
       <h2>Protect PDF</h2>
       <form onSubmit={handleSubmit}>
         <input type="file" accept="application/pdf" onChange={handleFileChange} />
-        <input type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input
+          type="password"
+          placeholder="Enter password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <button type="submit">Protect PDF</button>
       </form>
       {message && <p>{message}</p>}

@@ -17,6 +17,8 @@ import RepairPdfPage from './pages/RepairPdfPage';
 import AddPageNumbers from './pages/AddPageNumbers';
 import RedactPdfPage from './pages/RedactPdfPage';
 import ProtectPdfPage from './pages/ProtectPdfPage';
+import UnlockPdfPage from './pages/UnlockPdfPage';
+import CropPdfPage from './pages/CropPdfPage';
 
 
 
@@ -43,7 +45,9 @@ function App() {
            <Link to="/repair" style={{ marginRight: '1rem' }}>Repair PDF</Link>
           <Link to="/add-page-numbers" style={{ marginRight: '1rem' }}>Add Page Numbers</Link>
           <Link to="/redact" style={{ marginRight: '1rem' }}>Redact PDF</Link>
-          <Link to="/protect-pdf" style={{ marginRight: '1rem' }}>Protect PDF</Link>
+          <Link to="/protect" style={{ marginRight: '1rem' }}>Protect PDF</Link>
+          <Link to="/unlock" style={{ marginRight: '1rem' }}>Unlock PDF</Link>
+          <Link to="/crop" style={{ marginRight: '1rem' }}>Crop PDF</Link>
 
           
 
@@ -66,7 +70,9 @@ function App() {
           <Route path="/repair" element={<RepairPdfPage />} />
           <Route path="/add-page-numbers" element={<AddPageNumbers />} />
           <Route path="/redact" element={<RedactPdfPage />} />
-          <Route path="/protect-pdf" element={<ProtectPdfPage />} />
+          <Route path="/protect" element={<ProtectPdfPage />} />
+          <Route path="/unlock" element={<UnlockPdfPage />} />
+          <Route path="/crop" element={<CropPdfPage />} />
 
         </Routes>
       </div>

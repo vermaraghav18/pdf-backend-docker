@@ -1,0 +1,17 @@
+.crop-pdf-container {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+  background-color: #f3f3f3;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.crop-pdf-container input,
+.crop-pdf-container button {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  width: 100%;
+}

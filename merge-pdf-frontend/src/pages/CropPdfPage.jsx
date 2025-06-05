@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles/CropPdfPage.css';
 
+const BASE_URL =
+  import.meta.env.MODE === 'development'
+    ? 'http://localhost:10000'
+    : 'https://your-backend.onrender.com';
+
 function CropPdfPage() {
   const [file, setFile] = useState(null);
   const [top, setTop] = useState('');
@@ -16,17 +21,15 @@ function CropPdfPage() {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('top', top);
-    formData.append('bottom', bottom);
-    formData.append('left', left);
-    formData.append('right', right);
+    formData.append('top_percent', top);
+    formData.append('bottom_percent', bottom);
+    formData.append('left_percent', left);
+    formData.append('right_percent', right);
 
     try {
-      const response = await axios.post(
-        'http://localhost:10000/api/crop',
-        formData,
-        { responseType: 'blob' }
-      );
+      const response = await axios.post(`${BASE_URL}/api/crop`, formData, {
+        responseType: 'blob',
+      });
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const link = document.createElement('a');

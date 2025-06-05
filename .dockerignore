@@ -1,7 +1,20 @@
+# Node & Python cache
 node_modules
-uploads
 __pycache__
 *.pyc
 *.pyo
+
+# File storage
+uploads
+outputs
+
+# System files
 .DS_Store
 .env
+
+# Build artifacts
+*.log
+*.zip
+*.egg-info
+dist/
+build/

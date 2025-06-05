@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles/UnlockPdfPage.css';
 
+const BASE_URL =
+  import.meta.env.MODE === 'development'
+    ? 'http://localhost:10000'
+    : 'https://your-backend.onrender.com';
+
+
 function UnlockPdfPage() {
   const [file, setFile] = useState(null);
   const [password, setPassword] = useState('');
@@ -20,11 +26,10 @@ function UnlockPdfPage() {
     formData.append('password', password);
 
     try {
-      const response = await axios.post(
-        'http://localhost:10000/api/unlock',
-        formData,
-        { responseType: 'blob' }
-      );
+    const response = await axios.post(`${BASE_URL}/api/unlock`, formData, {
+      responseType: 'blob',
+    });
+
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const link = document.createElement('a');
@@ -42,7 +47,12 @@ function UnlockPdfPage() {
       <h2>Unlock PDF</h2>
       <form onSubmit={handleSubmit}>
         <input type="file" accept="application/pdf" onChange={handleFileChange} />
-        <input type="password" placeholder="Enter PDF password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input
+          type="password"
+          placeholder="Enter PDF password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <button type="submit">Unlock PDF</button>
       </form>
       {message && <p>{message}</p>}

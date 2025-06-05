@@ -1,0 +1,46 @@
+.unlock-pdf-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #f2f2f2;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.unlock-pdf-container h2 {
+  margin-bottom: 20px;
+  font-size: 1.6rem;
+  color: #333;
+}
+
+.unlock-pdf-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.unlock-pdf-container input[type="file"],
+.unlock-pdf-container input[type="password"],
+.unlock-pdf-container button {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.unlock-pdf-container button {
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.unlock-pdf-container button:hover {
+  background-color: #0056b3;
+}
+
+.unlock-pdf-container p {
+  margin-top: 10px;
+  font-weight: bold;
+}
