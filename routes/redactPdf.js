@@ -40,9 +40,19 @@ if (!contentType || !contentType.includes('application/pdf')) {
 
     fs.unlinkSync(req.file.path);
   } catch (err) {
-    console.error('❌ Redact error:', err.message);
-    res.status(500).send('Failed to redact PDF.');
+  console.error('❌ Redact error:', err.message);
+  if (err.response) {
+    console.error('📦 Response data:', err.response.data);
+    console.error('📦 Status code:', err.response.status);
+    console.error('📦 Headers:', err.response.headers);
+  } else if (err.request) {
+    console.error('📡 Request was made but no response received');
+    console.error(err.request);
+  } else {
+    console.error('❌ Something else went wrong:', err.message);
   }
+  res.status(500).send('Failed to redact PDF.');
+}
 });
 
 module.exports = router;
