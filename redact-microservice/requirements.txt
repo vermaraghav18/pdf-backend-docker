@@ -1,4 +1,4 @@
 fastapi
 uvicorn
-PyMuPDF==1.22.3
+PyMuPDF==1.23.20
 python-multipart
