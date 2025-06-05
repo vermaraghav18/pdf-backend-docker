@@ -14,10 +14,10 @@ function RedactPdfPage() {
     formData.append('pdf', file);
     formData.append('keywords', keywords);
     try {
-      const res = await axios.post(
-        'https://simple-backend-lfh7.onrender.com/api/redact',
-        formData, { responseType: 'blob' }
-      );
+          const res = await axios.post('http://localhost:10000/api/redact', formData, {
+      responseType: 'blob'
+    });
+
       const blob = new Blob([res.data], { type: 'application/pdf' });
       setDownloadUrl(URL.createObjectURL(blob));
       setMessage("✅ Redaction complete!");
