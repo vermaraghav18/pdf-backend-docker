@@ -19,7 +19,7 @@ router.post('/', upload.single('file'), async (req, res) => {
   formData.append('opacity', opacity || 0.3);
 
   try {
-    const response = await axios.post('http://localhost:10006/', formData, {
+    const response = await axios.post('http://127.0.0.1:10006/', formData, {
       headers: formData.getHeaders(),
       responseType: 'stream',
     });
