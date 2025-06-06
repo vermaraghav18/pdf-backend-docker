@@ -1,19 +1,22 @@
 # ================================
 # Dockerfile for unified backend
-# Runs Node.js + 8 FastAPI microservices + QPDF
+# Runs Node.js + 8 FastAPI microservices + QPDF + LibreOffice
 # ================================
 
 FROM python:3.10-slim AS base
 
-# Install Node.js 18, qpdf, and required tools
+# Install Node.js 18, qpdf, libreoffice, and PDF tools
 RUN apt-get update && \
-    apt-get install -y curl gnupg zip poppler-utils qpdf && \
+    apt-get install -y curl gnupg zip poppler-utils qpdf libreoffice && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /app
+
+# Copy full project
 COPY . .
 
 # Install Python dependencies for all microservices
@@ -30,10 +33,10 @@ RUN pip install --upgrade pip && \
 # Install Node.js dependencies
 RUN npm install
 
-# Optional Render environment flag
+# Optional: Render.com environment variable
 ENV RENDER=true
 
-# Startup script for all services
+# Create startup script
 RUN echo '#!/bin/sh' > start.sh && \
     echo 'uvicorn redact-microservice.main:app --host 0.0.0.0 --port 10001 > redact.log 2>&1 &' >> start.sh && \
     echo 'uvicorn protect-microservice.protect:app --host 0.0.0.0 --port 10002 > protect.log 2>&1 &' >> start.sh && \
@@ -46,8 +49,8 @@ RUN echo '#!/bin/sh' > start.sh && \
     echo 'node server.js' >> start.sh && \
     chmod +x start.sh
 
-# Expose service ports
+# Expose all required ports
 EXPOSE 10000 10001 10002 10003 10004 10005 10006 10007 10008
 
-# Start all services
+# Start script
 CMD ["sh", "./start.sh"]
