@@ -46,10 +46,11 @@ function WatermarkPdfPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:10000/api/watermark-pdf', {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/api/watermark-pdf`,
+        formData,
+        { responseType: 'blob' }
+      );
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');

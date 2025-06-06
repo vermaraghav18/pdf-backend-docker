@@ -14,29 +14,46 @@ async def sign_pdf(
     y: int = Form(0),
     page: int = Form(0),
     opacity: float = Form(1.0),
-    image: UploadFile = File(None)  # ✅ Support for drawn signature
+    image: UploadFile = File(None)
 ):
-    try:
-        input_bytes = await file.read()
-        doc = fitz.open(stream=input_bytes, filetype="pdf")
+    input_bytes = await file.read()
+    doc = fitz.open(stream=input_bytes, filetype="pdf")
+    page_obj = doc[page]
 
-        page_obj = doc[page]
+    if method == "type" and text:
+        # Insert text with RGBA color (opacity applied to black)
+        page_obj.insert_text(
+            (x, y),
+            text,
+            fontsize=18,
+            color=(0, 0, 0, opacity)
+        )
 
-        if method == "type" and text:
-            page_obj.insert_text((x, y), text, fontsize=18, overlay=True)
+    elif method == "draw" and image:
+        image_bytes = await image.read()
 
-        elif method == "draw" and image:
-            image_bytes = await image.read()
-            image_rect = fitz.Rect(x, y, x + 100, y + 50)  # You can scale this if needed
-            page_obj.insert_image(image_rect, stream=image_bytes, overlay=True)
+        # Load image into pixmap
+        pix = fitz.Pixmap(image_bytes)
 
-        output = io.BytesIO()
-        doc.save(output)
-        output.seek(0)
+        # Check if image already has alpha channel
+        if pix.alpha:
+            page_obj.insert_image(
+                fitz.Rect(x, y, x + pix.width, y + pix.height),
+                pixmap=pix
+            )
+        else:
+            # Add alpha manually
+            pix_with_alpha = fitz.Pixmap(pix, 1)  # force alpha copy
+            pix_with_alpha.set_alpha(int(opacity * 255))
+            page_obj.insert_image(
+                fitz.Rect(x, y, x + pix.width, y + pix.height),
+                pixmap=pix_with_alpha
+            )
 
-        return StreamingResponse(output, media_type="application/pdf", headers={
-            "Content-Disposition": "attachment; filename=signed.pdf"
-        })
-    except Exception as e:
-        print("SIGN ERROR:", e)
-        return {"error": str(e)}
+    output = io.BytesIO()
+    doc.save(output)
+    output.seek(0)
+
+    return StreamingResponse(output, media_type="application/pdf", headers={
+        "Content-Disposition": "attachment; filename=signed.pdf"
+    })
