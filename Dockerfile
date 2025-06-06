@@ -1,24 +1,22 @@
 # ================================
 # Dockerfile for unified backend
-# Runs Node.js + 8 FastAPI microservices
+# Runs Node.js + 8 FastAPI microservices + QPDF
 # ================================
 
 FROM python:3.10-slim AS base
 
-# Install Node.js 18 and tools
-# Install Node.js 18 and tools
+# Install Node.js 18, qpdf, and required tools
 RUN apt-get update && \
-    apt-get install -y curl gnupg zip poppler-utils && \
+    apt-get install -y curl gnupg zip poppler-utils qpdf && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-
 WORKDIR /app
 COPY . .
 
-# Install Python dependencies (all microservices)
+# Install Python dependencies for all microservices
 RUN pip install --upgrade pip && \
     pip install -r redact-microservice/requirements.txt && \
     pip install -r protect-microservice/requirements.txt && \
@@ -32,7 +30,7 @@ RUN pip install --upgrade pip && \
 # Install Node.js dependencies
 RUN npm install
 
-# Optional: environment variable for Render
+# Optional Render environment flag
 ENV RENDER=true
 
 # Startup script for all services
@@ -48,8 +46,8 @@ RUN echo '#!/bin/sh' > start.sh && \
     echo 'node server.js' >> start.sh && \
     chmod +x start.sh
 
-
-# Expose all service ports
+# Expose service ports
 EXPOSE 10000 10001 10002 10003 10004 10005 10006 10007 10008
 
+# Start all services
 CMD ["sh", "./start.sh"]
