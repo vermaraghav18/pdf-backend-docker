@@ -14,41 +14,32 @@ async def sign_pdf(
     y: int = Form(0),
     page: int = Form(0),
     opacity: float = Form(1.0),
-    image: UploadFile = File(None)
+    image: UploadFile = File(None)  # for "draw" method
 ):
     input_bytes = await file.read()
     doc = fitz.open(stream=input_bytes, filetype="pdf")
-    page_obj = doc[page]
+
+    try:
+        page_obj = doc[page]
+    except IndexError:
+        return {"error": "Invalid page number."}
 
     if method == "type" and text:
-        # Insert text with RGBA color (opacity applied to black)
+        # ✅ Insert semi-transparent text
         page_obj.insert_text(
             (x, y),
             text,
             fontsize=18,
-            color=(0, 0, 0, opacity)
+            render_mode=3,  # Fill text with opacity
+            color=(0, 0, 0),  # Black
+            fill_opacity=opacity
         )
 
     elif method == "draw" and image:
         image_bytes = await image.read()
-
-        # Load image into pixmap
         pix = fitz.Pixmap(image_bytes)
-
-        # Check if image already has alpha channel
-        if pix.alpha:
-            page_obj.insert_image(
-                fitz.Rect(x, y, x + pix.width, y + pix.height),
-                pixmap=pix
-            )
-        else:
-            # Add alpha manually
-            pix_with_alpha = fitz.Pixmap(pix, 1)  # force alpha copy
-            pix_with_alpha.set_alpha(int(opacity * 255))
-            page_obj.insert_image(
-                fitz.Rect(x, y, x + pix.width, y + pix.height),
-                pixmap=pix_with_alpha
-            )
+        rect = fitz.Rect(x, y, x + pix.width, y + pix.height)
+        page_obj.insert_image(rect, pixmap=pix, overlay=True, opacity=opacity)
 
     output = io.BytesIO()
     doc.save(output)
