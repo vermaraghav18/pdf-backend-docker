@@ -29,7 +29,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     response.data.on('end', () => fs.unlinkSync(filePath));
   } catch (err) {
     console.error('Watermark PDF failed:', err.message);
-    res.status(500).send('Failed to add watermark');
+    res.status(500).send('Watermark PDF conversion failed.');
   }
 });
 

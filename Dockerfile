@@ -37,16 +37,17 @@ ENV RENDER=true
 
 # Startup script for all services
 RUN echo '#!/bin/sh' > start.sh && \
-    echo 'uvicorn redact-microservice.main:app --host 0.0.0.0 --port 10001 &' >> start.sh && \
-    echo 'uvicorn protect-microservice.protect:app --host 0.0.0.0 --port 10002 &' >> start.sh && \
-    echo 'uvicorn unlock-microservice.unlock:app --host 0.0.0.0 --port 10003 &' >> start.sh && \
-    echo 'uvicorn crop-microservice.crop:app --host 0.0.0.0 --port 10004 &' >> start.sh && \
-    echo 'uvicorn sign-microservice.sign:app --host 0.0.0.0 --port 10005 &' >> start.sh && \
-    echo 'uvicorn watermark-microservice.watermark:app --host 0.0.0.0 --port 10006 &' >> start.sh && \
-    echo 'uvicorn pdf-to-jpg-microservice.pdf_to_jpg:app --host 0.0.0.0 --port 10007 &' >> start.sh && \
-    echo 'uvicorn jpg-to-pdf-microservice.jpg_to_pdf:app --host 0.0.0.0 --port 10008 &' >> start.sh && \
+    echo 'uvicorn redact-microservice.main:app --host 0.0.0.0 --port 10001 > redact.log 2>&1 &' >> start.sh && \
+    echo 'uvicorn protect-microservice.protect:app --host 0.0.0.0 --port 10002 > protect.log 2>&1 &' >> start.sh && \
+    echo 'uvicorn unlock-microservice.unlock:app --host 0.0.0.0 --port 10003 > unlock.log 2>&1 &' >> start.sh && \
+    echo 'uvicorn crop-microservice.crop:app --host 0.0.0.0 --port 10004 > crop.log 2>&1 &' >> start.sh && \
+    echo 'uvicorn sign-microservice.sign:app --host 0.0.0.0 --port 10005 > sign.log 2>&1 &' >> start.sh && \
+    echo 'uvicorn watermark-microservice.watermark:app --host 0.0.0.0 --port 10006 > watermark.log 2>&1 &' >> start.sh && \
+    echo 'uvicorn pdf-to-jpg-microservice.pdf_to_jpg:app --host 0.0.0.0 --port 10007 > pdf2jpg.log 2>&1 &' >> start.sh && \
+    echo 'uvicorn jpg-to-pdf-microservice.jpg_to_pdf:app --host 0.0.0.0 --port 10008 > jpg2pdf.log 2>&1 &' >> start.sh && \
     echo 'node server.js' >> start.sh && \
     chmod +x start.sh
+
 
 # Expose all service ports
 EXPOSE 10000 10001 10002 10003 10004 10005 10006 10007 10008

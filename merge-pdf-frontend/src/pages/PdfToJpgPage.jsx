@@ -26,8 +26,7 @@ function PdfToJpgPage() {
 
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL}/api/pdf-to-jpg`,
-      formData,
+      `${import.meta.env.VITE_API_BASE_URL}/api/pdf-to-jpg`, formData,
       { responseType: 'blob' }
     );
 
