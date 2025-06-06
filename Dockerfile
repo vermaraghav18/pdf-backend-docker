@@ -6,12 +6,14 @@
 FROM python:3.10-slim AS base
 
 # Install Node.js 18 and tools
+# Install Node.js 18 and tools
 RUN apt-get update && \
-    apt-get install -y curl gnupg zip && \
+    apt-get install -y curl gnupg zip poppler-utils && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
 
 WORKDIR /app
 COPY . .

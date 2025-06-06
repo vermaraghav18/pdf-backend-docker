@@ -13,29 +13,33 @@ function PdfToJpgPage() {
     setDownloadUrl('');
   };
 
-  const handleConvert = async () => {
-    if (!pdfFile) {
-      setStatus('Please upload a PDF file.');
-      return;
-    }
+ const handleConvert = async () => {
+  if (!pdfFile) {
+    setStatus('Please upload a PDF file.');
+    return;
+  }
 
-    setStatus('Converting PDF to JPG...');
-    const formData = new FormData();
-    formData.append('file', pdfFile);
+  setStatus('Converting PDF to JPG...');
+  const formData = new FormData();
+  formData.append('file', pdfFile);
+  formData.append('dpi', '150'); // ✅ Must come before axios.post
 
-    try {
-      const response = await axios.post('http://localhost:10007/', formData, {
-        responseType: 'blob',
-      });
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/api/pdf-to-jpg`,
+      formData,
+      { responseType: 'blob' }
+    );
 
-      const blob = new Blob([response.data], { type: 'application/zip' });
-      const url = window.URL.createObjectURL(blob);
-      setDownloadUrl(url);
-      setStatus('Conversion complete! Click below to download.');
-    } catch (err) {
-      setStatus('Conversion failed. Please try again.');
-    }
-  };
+    const blob = new Blob([response.data], { type: 'application/zip' });
+    const url = window.URL.createObjectURL(blob);
+    setDownloadUrl(url);
+    setStatus('Conversion complete! Click below to download.');
+  } catch (err) {
+    console.error(err);
+    setStatus('Conversion failed. Please try again.');
+  }
+};
 
   return (
     <div className="pdf-to-jpg-container">
