@@ -22,12 +22,15 @@ function JpgToPdfPage() {
     setStatus('Converting JPG to PDF...');
 
     const formData = new FormData();
-    selectedFiles.forEach((file) => formData.append('images', file));
+    selectedFiles.forEach((file) => formData.append('files', file));
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/jpg-to-pdf`, formData, {
-  responseType: 'blob',
-});
+      const response = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/api/jpg-to-pdf`,
+      formData,
+      { responseType: 'blob' }
+    );
+
 
 
       const blob = new Blob([response.data], { type: 'application/pdf' });

@@ -1,6 +1,6 @@
 # ================================
 # Dockerfile for unified backend
-# Runs Node.js + 8 FastAPI microservices + QPDF + LibreOffice
+# Runs Node.js + 9 FastAPI microservices + QPDF + LibreOffice
 # ================================
 
 FROM python:3.10-slim AS base
@@ -28,7 +28,8 @@ RUN pip install --upgrade pip && \
     pip install -r sign-microservice/requirements.txt && \
     pip install -r watermark-microservice/requirements.txt && \
     pip install -r pdf-to-jpg-microservice/requirements.txt && \
-    pip install -r jpg-to-pdf-microservice/requirements.txt
+    pip install -r jpg-to-pdf-microservice/requirements.txt && \
+    pip install -r ppt-to-pdf-microservice/requirements.txt
 
 # Install Node.js dependencies
 RUN npm install
@@ -46,11 +47,12 @@ RUN echo '#!/bin/sh' > start.sh && \
     echo 'uvicorn watermark-microservice.watermark:app --host 0.0.0.0 --port 10006 > watermark.log 2>&1 &' >> start.sh && \
     echo 'uvicorn pdf-to-jpg-microservice.pdf_to_jpg:app --host 0.0.0.0 --port 10007 > pdf2jpg.log 2>&1 &' >> start.sh && \
     echo 'uvicorn jpg-to-pdf-microservice.jpg_to_pdf:app --host 0.0.0.0 --port 10008 > jpg2pdf.log 2>&1 &' >> start.sh && \
+    echo 'uvicorn ppt-to-pdf-microservice.main:app --host 0.0.0.0 --port 10009 > ppt2pdf.log 2>&1 &' >> start.sh && \
     echo 'node server.js' >> start.sh && \
     chmod +x start.sh
 
 # Expose all required ports
-EXPOSE 10000 10001 10002 10003 10004 10005 10006 10007 10008
+EXPOSE 10000 10001 10002 10003 10004 10005 10006 10007 10008 10009
 
 # Start script
 CMD ["sh", "./start.sh"]
