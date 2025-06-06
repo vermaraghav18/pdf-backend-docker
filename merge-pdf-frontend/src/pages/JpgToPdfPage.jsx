@@ -25,11 +25,10 @@ function JpgToPdfPage() {
     selectedFiles.forEach((file) => formData.append('images', file));
 
     try {
-      const response = await axios.post(
-        'http://localhost:10008/',
-        formData,
-        { responseType: 'blob' }
-      );
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/jpg-to-pdf`, formData, {
+  responseType: 'blob',
+});
+
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);

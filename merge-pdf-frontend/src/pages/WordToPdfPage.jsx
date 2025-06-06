@@ -25,11 +25,12 @@ function WordToPdfPage() {
     formData.append('file', selectedFile);
 
     try {
-      const response = await axios.post(
-        'https://pdf-backend-docker.onrender.com/api/word-to-pdf',
-        formData,
-        { responseType: 'blob' }
-      );
+     const response = await axios.post(
+  `${import.meta.env.VITE_API_BASE_URL}/api/word-to-pdf`,
+  formData,
+  { responseType: 'blob' }
+);
+
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');

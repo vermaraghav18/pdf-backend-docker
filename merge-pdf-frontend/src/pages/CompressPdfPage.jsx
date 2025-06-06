@@ -29,7 +29,7 @@ function CompressPdfPage() {
 
     try {
       const response = await axios.post(
-        'https://pdf-backend-docker.onrender.com/api/compress',
+        `${import.meta.env.VITE_API_BASE_URL}/api/compress`,
         formData,
         { responseType: 'blob' }
       );

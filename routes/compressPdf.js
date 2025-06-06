@@ -10,16 +10,9 @@ router.post('/', upload.single('file'), async (req, res) => {
   try {
     const inputPath = req.file.path;
     const outputPath = path.join(path.dirname(inputPath), `compressed-${Date.now()}.pdf`);
-    const level = req.body.level || 'recommended';
 
-    // Compression settings based on level
-    const quality = {
-      extreme: '/screen',
-      recommended: '/ebook',
-      high: '/printer'
-    }[level] || '/ebook';
-
-    const cmd = `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=${quality} -dNOPAUSE -dQUIET -dBATCH -sOutputFile="${outputPath}" "${inputPath}"`;
+    // qpdf compression (basic stream optimization)
+    const cmd = `qpdf --linearize "${inputPath}" "${outputPath}"`;
 
     exec(cmd, (err) => {
       if (err) {
