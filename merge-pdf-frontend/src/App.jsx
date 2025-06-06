@@ -4,7 +4,6 @@ import MergePdfPage from './pages/MergePdfPage';
 import SplitPdfPage from './pages/SplitPdfPage';
 import CompressPdfPage from './pages/CompressPdfPage';
 import ComparePdfPage from './pages/ComparePdfPage';
-import PdfToJpgPage from './pages/PdfToJpgPage';
 import PdfToWordPage from './pages/PdfToWordPage';
 import WordToPdfPage from './pages/WordToPdfPage';
 import PdfToExcelPage from './pages/PdfToExcelPage'; // ✅ New Import
@@ -19,6 +18,11 @@ import RedactPdfPage from './pages/RedactPdfPage';
 import ProtectPdfPage from './pages/ProtectPdfPage';
 import UnlockPdfPage from './pages/UnlockPdfPage';
 import CropPdfPage from './pages/CropPdfPage';
+import SignPdfPage from './pages/SignPdfPage';
+import WatermarkPdfPage from './pages/WatermarkPdfPage';
+import PdfToJpgPage from './pages/PdfToJpgPage';
+import JpgToPdfPage from './pages/JpgToPdfPage';
+
 
 
 
@@ -33,7 +37,6 @@ function App() {
           <Link to="/split" style={{ marginRight: '1rem' }}>Split PDF</Link>
           <Link to="/compress" style={{ marginRight: '1rem' }}>Compress PDF</Link>
           <Link to="/compare" style={{ marginRight: '1rem' }}>Compare PDF</Link>
-          <Link to="/pdf-to-jpg" style={{ marginRight: '1rem' }}>PDF to JPG</Link>
           <Link to="/pdf-to-word" style={{ marginRight: '1rem' }}>PDF to Word</Link>
           <Link to="/word-to-pdf" style={{ marginRight: '1rem' }}>Word to PDF</Link>
           <Link to="/pdf-to-excel" style={{ marginRight: '1rem' }}>PDF to Excel</Link> {/* ✅ New Link */}
@@ -48,6 +51,10 @@ function App() {
           <Link to="/protect" style={{ marginRight: '1rem' }}>Protect PDF</Link>
           <Link to="/unlock" style={{ marginRight: '1rem' }}>Unlock PDF</Link>
           <Link to="/crop" style={{ marginRight: '1rem' }}>Crop PDF</Link>
+          <Link to="/sign-pdf" style={{ marginRight: '1rem' }}>Sign PDF</Link>
+          <Link to="/watermark-pdf" style={{ marginRight: '1rem' }}>Watermark PDF</Link>
+          <Link to="/pdf-to-jpg" style={{ marginRight: '1rem' }}>PDF to JPG</Link>
+          <Link to="/jpg-to-pdf" style={{ marginRight: '1rem' }}>JPG to PDF</Link>
 
           
 
@@ -58,7 +65,6 @@ function App() {
           <Route path="/split" element={<SplitPdfPage />} />
           <Route path="/compress" element={<CompressPdfPage />} />
           <Route path="/compare" element={<ComparePdfPage />} />
-          <Route path="/pdf-to-jpg" element={<PdfToJpgPage />} />
           <Route path="/pdf-to-word" element={<PdfToWordPage />} />
           <Route path="/word-to-pdf" element={<WordToPdfPage />} />
           <Route path="/pdf-to-excel" element={<PdfToExcelPage />} /> {/* ✅ New Route */}
@@ -73,6 +79,10 @@ function App() {
           <Route path="/protect" element={<ProtectPdfPage />} />
           <Route path="/unlock" element={<UnlockPdfPage />} />
           <Route path="/crop" element={<CropPdfPage />} />
+          <Route path="/sign-pdf" element={<SignPdfPage />} />
+          <Route path="/watermark-pdf" element={<WatermarkPdfPage />} />
+          <Route path="/pdf-to-jpg" element={<PdfToJpgPage />} />
+          <Route path="/jpg-to-pdf" element={<JpgToPdfPage />} />
 
         </Routes>
       </div>

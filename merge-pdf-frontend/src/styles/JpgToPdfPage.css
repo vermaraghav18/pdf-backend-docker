@@ -1,0 +1,75 @@
+.jpg-to-pdf-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #f5f7fa;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.jpg-to-pdf-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+input[type="file"] {
+  margin-bottom: 15px;
+  padding: 8px;
+  font-size: 16px;
+}
+
+.preview-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 15px 0;
+  max-height: 200px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.preview-box p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #0077ff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #005fcb;
+}
+
+.download-btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 18px;
+  background-color: #28a745;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.download-btn:hover {
+  background-color: #1e7e34;
+}
+
+.status-message {
+  margin-top: 15px;
+  font-size: 15px;
+  color: #333;
+}

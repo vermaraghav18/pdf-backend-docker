@@ -1,61 +1,61 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import '../styles/ComponentStyles.css';
+import '../styles/PdfToJpgPage.css';
 
 function PdfToJpgPage() {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [pdfFile, setPdfFile] = useState(null);
+  const [status, setStatus] = useState('');
+  const [downloadUrl, setDownloadUrl] = useState('');
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-    setMessage(e.target.files[0] ? `📂 Selected: ${e.target.files[0].name}` : '');
+    setPdfFile(e.target.files[0]);
+    setStatus('');
+    setDownloadUrl('');
   };
 
   const handleConvert = async () => {
-    if (!selectedFile) {
-      setMessage('❌ Please select a PDF file.');
+    if (!pdfFile) {
+      setStatus('Please upload a PDF file.');
       return;
     }
 
-    setLoading(true);
-    setMessage('🖼️ Converting to JPG...');
-
+    setStatus('Converting PDF to JPG...');
     const formData = new FormData();
-    formData.append('file', selectedFile);
+    formData.append('file', pdfFile);
 
     try {
-      const response = await axios.post(
-        'https://pdf-backend-docker.onrender.com/api/pdf-to-jpg',
-        formData,
-        { responseType: 'blob' }
-      );
+      const response = await axios.post('http://localhost:10007/', formData, {
+        responseType: 'blob',
+      });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'pdf-to-jpg.zip');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      setMessage('✅ Converted and ready to download!');
-    } catch (error) {
-      console.error(error);
-      setMessage('❌ Conversion failed.');
-    } finally {
-      setLoading(false);
+      const blob = new Blob([response.data], { type: 'application/zip' });
+      const url = window.URL.createObjectURL(blob);
+      setDownloadUrl(url);
+      setStatus('Conversion complete! Click below to download.');
+    } catch (err) {
+      setStatus('Conversion failed. Please try again.');
     }
   };
 
   return (
-    <div className="tool-container">
-      <h2>🖼️ PDF to JPG</h2>
+    <div className="pdf-to-jpg-container">
+      <h2>Convert PDF to JPG</h2>
+
       <input type="file" accept="application/pdf" onChange={handleFileChange} />
-      <button onClick={handleConvert} disabled={loading}>
-        {loading ? 'Converting...' : 'Convert to JPG'}
-      </button>
-      <p>{message}</p>
+
+      <div className="preview-box">
+        {pdfFile && <p>✅ Selected: {pdfFile.name}</p>}
+      </div>
+
+      <button onClick={handleConvert}>Convert to JPG</button>
+
+      {status && <p className="status-message">{status}</p>}
+
+      {downloadUrl && (
+        <a href={downloadUrl} download="converted-images.zip" className="download-btn">
+          Download ZIP
+        </a>
+      )}
     </div>
   );
 }
