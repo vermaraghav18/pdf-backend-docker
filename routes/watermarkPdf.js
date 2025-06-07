@@ -3,9 +3,9 @@ const router = express.Router();
 const fs = require('fs');
 const FormData = require('form-data');
 const axios = require('axios');
-const { upload } = require('./uploadMiddleware');
+const { uploadPDF } = require('./uploadMiddleware');
 
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', uploadPDF.single('file'), async (req, res) => { 
   const filePath = req.file.path;
   const { method, text, x, y, page, opacity } = req.body;
 
@@ -25,6 +25,8 @@ router.post('/', upload.single('file'), async (req, res) => {
     });
 
     res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=watermarked.pdf');
+
     response.data.pipe(res);
     response.data.on('end', () => fs.unlinkSync(filePath));
   } catch (err) {

@@ -4,6 +4,8 @@ const axios = require('axios');
 const multer = require('multer');
 const fs = require('fs');
 const FormData = require('form-data');
+const { uploadPDF } = require('./uploadMiddleware');
+
 
 // Setup multer
 const upload = multer({ dest: 'uploads/' });
@@ -14,7 +16,8 @@ const microserviceURL = isRender
   ? 'http://localhost:10001/redact'  // Docker will link these internally
   : 'http://127.0.0.1:10001/redact'; // Local development
 
-router.post('/', upload.single('pdf'), async (req, res) => {
+router.post('/', uploadPDF.single('pdf'), async (req, res) => {
+
   try {
     const form = new FormData();
     form.append('pdf', fs.createReadStream(req.file.path));

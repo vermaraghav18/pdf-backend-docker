@@ -1,48 +1,44 @@
-// routes/mergePdf.js
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const multer = require('multer');
-const { PDFDocument } = require('pdf-lib');
-
 const router = express.Router();
+const axios = require('axios');
+const fs = require('fs');
+const FormData = require('form-data');
+const { uploadPDF } = require('./uploadMiddleware');
 
-// Multer config — use /tmp for Render compatibility
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, '/tmp'),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-});
+// Auto-detect microservice endpoint
+const isRender = process.env.RENDER === 'true';
+const microserviceURL = isRender
+  ? 'http://localhost:10001/redact'
+  : 'http://127.0.0.1:10001/redact';
 
-const upload = multer({ storage });
-
-router.post('/', upload.array('pdfs', 2), async (req, res) => {
+router.post('/', uploadPDF.single('pdf'), async (req, res) => {
   try {
-    const [file1, file2] = req.files;
+    const form = new FormData();
+    form.append('pdf', fs.createReadStream(req.file.path));
+    form.append('keywords', req.body.keywords);
 
-    const pdfDoc = await PDFDocument.create();
+    const response = await axios.post(microserviceURL, form, {
+      headers: form.getHeaders(),
+      responseType: 'stream',
+    });
 
-    for (let file of [file1, file2]) {
-      const filePath = path.join('/tmp', file.filename); // 🔥 Ensure it's /tmp
-      const existingPdfBytes = fs.readFileSync(filePath);
-      const donorPdfDoc = await PDFDocument.load(existingPdfBytes);
-      const copiedPages = await pdfDoc.copyPages(donorPdfDoc, donorPdfDoc.getPageIndices());
-      copiedPages.forEach((page) => pdfDoc.addPage(page));
+    const contentType = response.headers['content-type'];
+    if (!contentType || !contentType.includes('application/pdf')) {
+      console.error('❌ Not a PDF. Received:', contentType);
+      let errorData = '';
+      response.data.on('data', (chunk) => errorData += chunk);
+      response.data.on('end', () => console.error('Microservice error:', errorData));
+      return res.status(500).send('Redaction microservice returned an invalid response.');
     }
 
-    const mergedPdfBytes = await pdfDoc.save();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=redacted.pdf');
+    response.data.pipe(res);
 
-    const outputPath = path.join('/tmp', `merged-${Date.now()}.pdf`);
-    fs.writeFileSync(outputPath, mergedPdfBytes);
-
-    res.download(outputPath, () => {
-      // Cleanup temp files
-      fs.unlinkSync(path.join('/tmp', file1.filename));
-      fs.unlinkSync(path.join('/tmp', file2.filename));
-      fs.unlinkSync(outputPath);
-    });
+    response.data.on('end', () => fs.unlinkSync(req.file.path));
   } catch (err) {
-    console.error('Merge error:', err);
-    res.status(500).send('❌ Failed to merge PDFs');
+    console.error('❌ Redact error:', err.message);
+    res.status(500).send('Failed to redact PDF.');
   }
 });
 

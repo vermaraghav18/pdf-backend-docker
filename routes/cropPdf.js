@@ -3,9 +3,10 @@ const router = express.Router();
 const axios = require('axios');
 const fs = require('fs');
 const FormData = require('form-data');
-const { upload } = require('./uploadMiddleware');
+const { uploadPDF } = require('./uploadMiddleware');
 
-router.post('/', upload.single('file'), async (req, res) => {
+
+router.post('/', uploadPDF.single('pdf'), async (req, res) => {
   try {
     const filePath = req.file.path; // ✅ Correct path
     const {

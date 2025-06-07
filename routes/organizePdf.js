@@ -2,11 +2,12 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { PDFDocument, degrees } = require('pdf-lib');
-const { upload } = require('./uploadMiddleware');
+const { uploadPDF } = require('./uploadMiddleware');
+
 
 const router = express.Router();
 
-router.post('/', upload.single('pdf'), async (req, res) => {
+router.post('/', uploadPDF.single('pdf'), async (req, res) => {
   try {
     const filePath = req.file.path;
     const operations = JSON.parse(req.body.operations || '[]'); // Optional JSON array

@@ -2,30 +2,22 @@ const express = require('express');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const multer = require('multer');
 const { PDFDocument, degrees } = require('pdf-lib');
+const { uploadPDF } = require('./uploadMiddleware'); // ✅ Use shared uploader
 
 const router = express.Router();
 
-// ✅ Use OS temp directory
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, os.tmpdir()),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-});
-const upload = multer({ storage });
-
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', uploadPDF.single('file'), async (req, res) => {
   try {
-    const angle = parseInt(req.body.angle); // 🔥 Ensure integer
-    const filePath = path.join(os.tmpdir(), req.file.filename);
+    const angle = parseInt(req.body.angle, 10); // ✅ Ensure integer and base 10
+    if (isNaN(angle)) return res.status(400).send('❌ Invalid rotation angle');
+
+    const filePath = req.file.path;
     const pdfBytes = fs.readFileSync(filePath);
 
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const pages = pdfDoc.getPages();
-
-    pages.forEach((page) => {
-      page.setRotation(degrees(angle)); // ✅ Use pdf-lib degrees()
-    });
+    pages.forEach((page) => page.setRotation(degrees(angle)));
 
     const rotatedBytes = await pdfDoc.save();
     const outputPath = path.join(os.tmpdir(), `rotated-${Date.now()}.pdf`);

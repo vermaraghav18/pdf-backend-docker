@@ -3,9 +3,9 @@ const router = express.Router();
 const axios = require('axios');
 const fs = require('fs');
 const FormData = require('form-data');
-const { upload } = require('./uploadMiddleware'); // adjust if path is different
+const { uploadPDF } = require('./uploadMiddleware');
 
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', uploadPDF.single('file'), async (req, res) => {
   try {
     const filePath = req.file.path;
     const password = req.body.password;
@@ -20,6 +20,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     });
 
     res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=unlocked.pdf');
     response.data.pipe(res);
 
     response.data.on('end', () => {
