@@ -3,23 +3,27 @@ const fs = require('fs');
 const path = require('path');
 const pdfParse = require('pdf-parse');
 const { Document, Packer, Paragraph } = require('docx');
-const { upload } = require('./uploadMiddleware');
+const { uploadPDF } = require('./uploadMiddleware');
+
 
 const router = express.Router();
 
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', uploadPDF.single('file'), async (req, res) => {
   const inputPath = req.file.path;
-  const outputPath = inputPath.replace('.pdf', '.docx');
+  const outputPath = inputPath.replace(/\.pdf$/, '.docx'); // ✅ safer
 
   try {
     const dataBuffer = fs.readFileSync(inputPath);
     const data = await pdfParse(dataBuffer);
 
-    if (!data.text || data.text.trim() === "") {
-      return res.status(400).json({ error: "PDF has no readable text to convert." });
+    if (!data.text || data.text.trim() === '') {
+      return res.status(400).json({ error: 'PDF has no readable text to convert.' });
     }
 
-    const lines = data.text.split('\n').map(line => new Paragraph(line.trim()));
+    const lines = data.text
+      .split('\n')
+      .filter(line => line.trim() !== '')
+      .map(line => new Paragraph(line.trim()));
 
     const doc = new Document({
       sections: [{ children: lines }]
@@ -33,8 +37,8 @@ router.post('/', upload.single('file'), async (req, res) => {
       fs.unlinkSync(outputPath);
     });
   } catch (error) {
-    console.error("❌ PDF to Word conversion error:", error);
-    res.status(500).json({ error: "Failed to convert PDF to Word." });
+    console.error('❌ PDF to Word conversion error:', error);
+    res.status(500).json({ error: 'Failed to convert PDF to Word.' });
   }
 });
 
