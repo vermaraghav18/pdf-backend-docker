@@ -1,35 +1,29 @@
-const express = require('express');
+    const express = require('express');
 const fs = require('fs');
-const path = require('path');
-const { exec } = require('child_process');
+const FormData = require('form-data');
+const axios = require('axios');
 const { upload } = require('./uploadMiddleware');
-
 const router = express.Router();
 
 router.post('/', upload.single('file'), async (req, res) => {
-  const inputPath = req.file.path;
-  const outputDir = path.dirname(inputPath);
+  const filePath = req.file.path;
+
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream(filePath));
 
   try {
-    // LibreOffice CLI conversion (headless)
-    const cmd = `soffice --headless --convert-to pdf "${inputPath}" --outdir "${outputDir}"`;
-
-    exec(cmd, (err, stdout, stderr) => {
-      if (err) {
-        console.error('LibreOffice error:', stderr);
-        return res.status(500).json({ error: 'Conversion failed' });
-      }
-
-      const outputPath = inputPath.replace(/\.(doc|docx)$/i, '.pdf');
-
-      res.download(outputPath, 'converted.pdf', () => {
-        fs.unlinkSync(inputPath);
-        fs.unlinkSync(outputPath);
-      });
+    const response = await axios.post('http://localhost:10010/', formData, {
+      headers: formData.getHeaders(),
+      responseType: 'stream',
     });
-  } catch (err) {
-    console.error('❌ Word to PDF error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+
+    res.setHeader('Content-Disposition', 'attachment; filename=converted.pdf');
+    response.data.pipe(res);
+  } catch (error) {
+    console.error('🔴 Error calling word-to-pdf microservice:', error.message);
+    res.status(500).json({ error: 'Conversion failed' });
+  } finally {
+    fs.unlinkSync(filePath);
   }
 });
 

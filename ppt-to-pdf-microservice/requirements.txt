@@ -1,5 +1,0 @@
-fastapi
-uvicorn
-python-pptx
-PyMuPDF
-reportlab

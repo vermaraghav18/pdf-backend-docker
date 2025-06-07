@@ -1,4 +1,3 @@
-// src/pages/PptToPdfPage.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles/ComponentStyles.css';
@@ -27,23 +26,23 @@ function PptToPdfPage() {
 
     try {
       const response = await axios.post(
-        'https://pdf-backend-docker.onrender.com/api/ppt-to-pdf',
+        `${import.meta.env.VITE_API_BASE_URL}/api/ppt-to-pdf`,
         formData,
         { responseType: 'blob' }
       );
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'converted.pdf';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'converted.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
       setMessage('✅ Conversion complete. File downloaded!');
     } catch (error) {
-      console.error('Conversion failed:', error);
+      console.error('❌ Conversion failed:', error);
       setMessage('❌ Conversion failed.');
     } finally {
       setLoading(false);
@@ -51,17 +50,18 @@ function PptToPdfPage() {
   };
 
   return (
-    <div className="ppt-to-pdf-container">
+    <div className="tool-container">
       <h2>📑 Convert PowerPoint to PDF</h2>
       <input
         type="file"
         accept=".ppt,.pptx"
         onChange={handleFileChange}
+        className="file-input"
       />
-      <button onClick={handleConvert} disabled={loading}>
+      <button onClick={handleConvert} disabled={loading} className="btn">
         {loading ? 'Converting...' : 'Convert to PDF'}
       </button>
-      <p>{message}</p>
+      <p className="status-message">{message}</p>
     </div>
   );
 }

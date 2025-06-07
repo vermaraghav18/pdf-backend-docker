@@ -32,7 +32,7 @@ const signPdfRoute = require('./routes/signPdf');
 const watermarkPdfRoute = require('./routes/watermarkPdf');
 const pdfToJpgRoute = require('./routes/pdfToJpg');
 const jpgToPdfRoute = require('./routes/jpgToPdf');
-
+const convertPptToPdfRoute = require('./routes/convertPptToPdf');
 
 
 
@@ -42,8 +42,7 @@ app.use('/api/pdf-to-excel', convertPdfToExcelRouter);
 console.log('✅ /api/pdf-to-excel mounted');
 app.use('/api/excel-to-pdf', convertExcelToPdfRouter);
 console.log('✅ /api/excel-to-pdf mounted');
-app.use('/api/word-to-pdf', convertWordToPdfRoute);
-console.log('✅ /api/word-to-pdf mounted');
+
 app.use('/api/pdf-to-word', convertPdfToWordRoute);
 console.log('✅ /api/pdf-to-word mounted');
 app.use('/api/compare', comparePdfRoute);
@@ -80,8 +79,10 @@ app.use('/api/pdf-to-jpg', pdfToJpgRoute);
 console.log('✅ /api/pdf-to-jpg mounted');
 app.use('/api/jpg-to-pdf', jpgToPdfRoute);
 console.log('✅ /api/jpg-to-pdf mounted');
-
-
+app.use('/api/word-to-pdf', convertWordToPdfRoute);
+console.log('✅ /api/word-to-pdf mounted');
+app.use('/api/ppt-to-pdf', convertPptToPdfRoute);
+console.log('✅ /api/ppt-to-pdf mounted');
 
 
 // ✅ Test Route

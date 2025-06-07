@@ -1,59 +1,30 @@
 const express = require('express');
 const fs = require('fs');
-const path = require('path');
-const ExcelJS = require('exceljs');
-const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
+const FormData = require('form-data');
+const axios = require('axios');
 const { upload } = require('./uploadMiddleware');
 
 const router = express.Router();
 
 router.post('/', upload.single('file'), async (req, res) => {
-  const inputPath = req.file.path;
-  const outputPath = inputPath.replace(/\.(xls|xlsx)$/, '.pdf');
+  const filePath = req.file.path;
+
+  const formData = new FormData();
+  formData.append('file', fs.createReadStream(filePath));
 
   try {
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(inputPath);
-    const worksheet = workbook.worksheets[0];
-
-    const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([595, 842]); // A4
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const { height } = page.getSize();
-
-    let y = height - 50;
-
-    worksheet.eachRow((row) => {
-      const rowText = row.values
-        .filter((v) => typeof v === 'string' || typeof v === 'number')
-        .join(' | ');
-
-      if (y < 50) {
-        y = height - 50;
-        pdfDoc.addPage(); // add new page if overflow
-      }
-
-      page.drawText(rowText, {
-        x: 50,
-        y,
-        size: 12,
-        font,
-        color: rgb(0, 0, 0),
-      });
-
-      y -= 20;
+    const response = await axios.post('http://localhost:10012/', formData, {
+      headers: formData.getHeaders(),
+      responseType: 'stream',
     });
 
-    const pdfBytes = await pdfDoc.save();
-    fs.writeFileSync(outputPath, pdfBytes);
-
-    res.download(outputPath, 'converted.pdf', () => {
-      fs.unlinkSync(inputPath);
-      fs.unlinkSync(outputPath);
-    });
+    res.setHeader('Content-Disposition', 'attachment; filename=converted.pdf');
+    response.data.pipe(res);
   } catch (error) {
-    console.error('❌ Excel to PDF error:', error);
+    console.error('🔴 Microservice Excel → PDF error:', error.message);
     res.status(500).json({ error: 'Conversion failed' });
+  } finally {
+    fs.unlinkSync(filePath);
   }
 });
 
