@@ -1,22 +1,15 @@
 const express = require('express');
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
-const multer = require('multer');
 const pdfParse = require('pdf-parse');
 const pptxgen = require('pptxgenjs');
+const { uploadPDF } = require('./uploadMiddleware'); // ✅ Use shared middleware
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, os.tmpdir()),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-});
-const upload = multer({ storage });
-
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', uploadPDF.single('file'), async (req, res) => {
   try {
-    const filePath = path.join(os.tmpdir(), req.file.filename);
+    const filePath = req.file.path; // ✅ Use multer's path
     const pdfBuffer = fs.readFileSync(filePath);
     const pdfData = await pdfParse(pdfBuffer);
 
@@ -31,7 +24,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     }
 
     const pptxBuffer = await pptx.write('nodebuffer');
-    const outPath = path.join(os.tmpdir(), `converted-${Date.now()}.pptx`);
+    const outPath = path.join(path.dirname(filePath), `converted-${Date.now()}.pptx`);
     fs.writeFileSync(outPath, pptxBuffer);
 
     res.download(outPath, () => {

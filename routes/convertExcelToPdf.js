@@ -2,11 +2,11 @@ const express = require('express');
 const fs = require('fs');
 const FormData = require('form-data');
 const axios = require('axios');
-const { upload } = require('./uploadMiddleware');
+const { uploadExcel } = require('./uploadMiddleware');
 
 const router = express.Router();
 
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', uploadExcel.single('file'), async (req, res) => {
   const filePath = req.file.path;
 
   const formData = new FormData();

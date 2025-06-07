@@ -3,11 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const pdfParse = require('pdf-parse');
 const ExcelJS = require('exceljs');
-const { upload } = require('./uploadMiddleware');
+const { uploadPDF } = require('./uploadMiddleware');
 
 const router = express.Router();
 
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', uploadPDF.single('file'), async (req, res) => {
   try {
     const dataBuffer = fs.readFileSync(req.file.path);
     const pdfData = await pdfParse(dataBuffer);

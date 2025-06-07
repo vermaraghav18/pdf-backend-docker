@@ -1,21 +1,15 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const multer = require('multer');
 const os = require('os');
 const { exec } = require('child_process');
+const { uploadPPT } = require('./uploadMiddleware');
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, os.tmpdir()),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-});
-const upload = multer({ storage });
-
-router.post('/', upload.single('file'), (req, res) => {
-  const inputPath = path.join(os.tmpdir(), req.file.filename);
-  const outputDir = os.tmpdir();
+router.post('/', uploadPPT.single('file'), async (req, res) => {
+  const inputPath = req.file.path; // <-- use path from multer's storage
+  const outputDir = path.dirname(inputPath); // same folder
 
   const command = `soffice --headless --convert-to pdf --outdir "${outputDir}" "${inputPath}"`;
 

@@ -1,14 +1,14 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { upload } = require('./uploadMiddleware');
+const { uploadPDF } = require('./uploadMiddleware');
 const pdfParse = require('pdf-parse');
 const stringSimilarity = require('string-similarity');
 
 const router = express.Router();
 
 // 👇 Multer middleware for two files
-const compareUpload = upload.fields([
+const compareUpload = uploadPDF.fields([
   { name: 'pdf1', maxCount: 1 },
   { name: 'pdf2', maxCount: 1 }
 ]);

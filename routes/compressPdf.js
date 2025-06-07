@@ -2,11 +2,11 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
-const { upload } = require('./uploadMiddleware');
+const { uploadPDF } = require('./uploadMiddleware');
+
 
 const router = express.Router();
-
-router.post('/', upload.single('file'), async (req, res) => {
+router.post('/', uploadPDF.single('file'), async (req, res) => {
   try {
     const inputPath = req.file.path;
     const outputPath = path.join(path.dirname(inputPath), `compressed-${Date.now()}.pdf`);

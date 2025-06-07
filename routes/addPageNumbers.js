@@ -1,12 +1,12 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { upload } = require('./uploadMiddleware');
+const { uploadPDF } = require('./uploadMiddleware');
 const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 
 const router = express.Router();
 
-router.post('/', upload.single('pdf'), async (req, res) => {
+router.post('/', uploadPDF.single('file'), async (req, res)=> {
   try {
     const filePath = req.file.path;
     const pdfBytes = fs.readFileSync(filePath);
