@@ -15,29 +15,42 @@ async def convert_excel_to_pdf(file: UploadFile = File(...)):
 
     temp_id = uuid.uuid4().hex
     input_path = f"temp_{temp_id}{file_ext}"
-    output_pdf = f"temp_{temp_id}.pdf"
+    output_guess = input_path.replace(file_ext, ".pdf")
+    output_final = f"temp_{temp_id}.pdf"
 
     with open(input_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
     try:
-        subprocess.run([
+        result = subprocess.run([
             "soffice",
             "--headless",
             "--convert-to", "pdf",
             "--outdir", ".",
             input_path
-        ], check=True)
+        ], capture_output=True, text=True)
 
-        # Convert output name based on LibreOffice output
-        generated_pdf = input_path.replace(file_ext, ".pdf")
+        print("🔍 LibreOffice stdout:", result.stdout)
+        print("🔴 LibreOffice stderr:", result.stderr)
 
-        os.rename(generated_pdf, output_pdf)
+        if result.returncode != 0:
+            return {"error": f"LibreOffice failed: {result.stderr}"}
 
-        return FileResponse(output_pdf, media_type="application/pdf", filename="converted.pdf")
+        # If output file exists, rename it; otherwise, fail gracefully
+        if os.path.exists(output_guess):
+            os.rename(output_guess, output_final)
+        elif os.path.exists(output_guess + ".pdf"):
+            os.rename(output_guess + ".pdf", output_final)
+        else:
+            return {"error": "Output PDF not generated"}
 
-    except subprocess.CalledProcessError:
-        return {"error": "Conversion failed using LibreOffice"}
+        return FileResponse(output_final, media_type="application/pdf", filename="converted.pdf")
+
+    except Exception as e:
+        return {"error": f"Exception: {str(e)}"}
+
     finally:
-        if os.path.exists(input_path): os.remove(input_path)
-        if os.path.exists(output_pdf): os.remove(output_pdf)
+        if os.path.exists(input_path):
+            os.remove(input_path)
+        if os.path.exists(output_final):
+            os.remove(output_final)
