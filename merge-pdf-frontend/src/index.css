@@ -1,163 +1,274 @@
-/* -------------------------
-   🧠 GLOBAL RESET + ROOT
--------------------------- */
-:root {
-  --bg-primary: #f6f9ff;
-  --bg-accent: #e8f0fe;
-  --primary: #4f46e5;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --success: #10b981;
-  --border: #d1d5db;
-
-  font-family: 'Inter', 'Poppins', sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  font-weight: 400;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* ✅ index.css — Fully Upgraded Theme with Gradient, Animations, Layout Depth */
 
 body {
   margin: 0;
   padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to bottom, #f6f9ff, #ffffff);
+  color: #111827;
+  transition: background 0.3s ease;
 }
 
-/* -------------------------
-   🌟 HERO SECTION
--------------------------- */
-.hero-section {
-  text-align: center;
-  padding: 3rem 1rem 2rem;
-  background-color: white;
+.app {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
 }
 
-.hero-title {
-  font-size: 3rem;
-  font-weight: 600;
-  font-family: 'Poppins', sans-serif;
-  color: var(--text-primary);
-}
-
-.hero-subtext {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  margin: 0.5rem auto 1.5rem;
-}
-
-.hero-cta {
-  background-color: var(--primary);
-  color: white;
-  text-decoration: none;
-  padding: 0.7rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 14px;
-  display: inline-block;
-  transition: all 0.2s ease;
-}
-
-.hero-cta:hover {
-  background-color: #3b34c4;
-  transform: scale(1.05);
-}
-
-/* -------------------------
-   📦 TOOL GRID
--------------------------- */
-.tool-grid {
-  display: grid;
-  gap: 1.5rem;
-  padding: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  max-width: 1200px;
-  margin: auto;
-}
-
-.tool-card {
-  background-color: var(--bg-accent);
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  text-align: center;
-  text-decoration: none;
-  color: var(--text-primary);
-  transition: all 0.25s ease;
-}
-
-.tool-card:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  transform: translateY(-4px);
-}
-
-.tool-icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-
-.tool-name {
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
-/* -------------------------
-   ✅ RESPONSIVE
--------------------------- */
-@media screen and (max-width: 768px) {
-  .hero-title {
-    font-size: 2.2rem;
-  }
-  .tool-grid {
-    padding: 1rem;
-  }
-  .tool-card {
-    padding: 1.2rem;
-  }
-}
-
-/* Navbar Layout */
+/* 🌈 Navbar Upgrade */
 .navbar {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
-  height: 64px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #D1D5DB;
-  position: relative;
-}
-
-/* Left Logo */
-.navbar-left {
-  flex: 1;
+  align-items: center;
+  padding: 0rem 2rem;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6));
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 0.5rem;
+  position: sticky;
+  top: 0;
+  border-radius: 20px;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .logo {
-  font-size: 24px;
-  font-weight: 600;
-  font-family: 'Poppins', sans-serif;
-  color: #111827;
-}
-
-/* Center Nav Links */
-.navbar-center {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  font-weight: 700;
+  font-size: 1.6rem;
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .navbar-center a {
-  font-size: 14px;
-  font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  color: #111827;
+  margin: 0 1rem;
   text-decoration: none;
+  color: #4f46e5;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .navbar-center a:hover {
-  color: #4F46E5;
+  color: #3730a3;
+  transform: scale(1.05);
+}
+
+.navbar-center a::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: #6366f1;
+  bottom: -4px;
+  left: 0;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}
+
+.navbar-center a:hover::after {
+  transform: scaleX(1);
+}
+
+/* ⚡ Hero Section */
+.hero-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(to right, #edf4ff, #ffffff);
+  border-radius: 20px;
+  margin-bottom: 3rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle at center, #c7d2fe, transparent);
+  border-radius: 50%;
+  z-index: 0;
+  animation: floatBlob 6s ease-in-out infinite alternate;
+}
+
+@keyframes floatBlob {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(30px, 20px); }
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  bottom: -40px;
+  right: -60px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle at center, #f0abfc, transparent);
+  border-radius: 50%;
+  z-index: 0;
+  animation: floatBlobReverse 8s ease-in-out infinite alternate;
+}
+
+@keyframes floatBlobReverse {
+  0% { transform: translate(0, 20); }
+  100% { transform: translate(-25px, -100px); }
+}
+
+.hero-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  background: linear-gradient(to right, #6366f1, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  z-index: 1;
+}
+
+.hero-subtext {
+  font-size: 1.2rem;
+  color: #6b7280;
+  margin: 1rem 0;
+  z-index: 1;
+}
+
+.hero-cta {
+  display: inline-block;
+  background: linear-gradient(to right, #6366f1, #8b5cf6);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.hero-cta:hover {
+  transform: scale(1.08);
+  background: linear-gradient(to right, #4f46e5, #6d28d9);
+}
+
+.hero-lottie {
+  width: 400px;
+  max-width: 45%;
+  z-index: 1;
+}
+
+/* 🧩 Tool Grid */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem 0;
+}
+
+.tool-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  text-decoration: none;
+}
+
+.tool-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(99, 102, 241, 0.12);
+}
+
+.tool-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tool-icon {
+  width: 90px;
+  height: 90px;
+}
+
+.tool-title {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.tool-desc {
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-lottie {
+    max-width: 100%;
+    margin-top: 2rem;
+  }
+
+  .navbar-center a {
+    margin: 0 0.5rem;
+  }
+}
+
+/* 🌙 Footer Styles */
+.footer {
+  background: linear-gradient(to right, #eef2ff, #f5f3ff);
+  padding: 2rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-top: 4rem;
+  border-top: 1px solid #e5e7eb;
+  backdrop-filter: blur(6px);
+  border-radius: 20px 20px 0 0;
+}
+
+.footer-links {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: #4f46e5;
+}
+
+.footer-logo {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
 }

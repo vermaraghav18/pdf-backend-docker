@@ -1,27 +1,239 @@
-.merge-container {
-  max-width: 400px;
-  margin: 60px auto;
-  padding: 20px;
-  text-align: center;
-  font-family: sans-serif;
-  border: 1px solid #ccc;
+/* ✅ MergePdfPage.css — Final Full Version with Floating Icons and Enhanced Dropzone */
+
+/* 📦 Hero-Style Background Container */
+.merge-hero-container {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(to bottom right, #f6f9ff, #ffffff);
+  padding-top: 0.1px;
+  padding-bottom: 0.1px;
+  border-radius: 20px;
+  margin: 2rem;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.04);
+  z-index: 0;
+}
+
+/* 🖼️ Floating Background Merge Icons */
+.merge-float-icon {
+  position: absolute;
+  opacity: 0.1;
+  z-index: 0;
+  width: 300px;
+  height: 300px;
+  animation: floatLarge 10s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.1));
+}
+
+.float-top-left {
+  top: -40px;
+  left: -30px;
+  animation-delay: 0s;
+}
+
+.float-bottom-right {
+  bottom: -40px;
+  right: -30px;
+  animation-delay: 3s;
+}
+
+/* 📎 Main Merge Icon Floating */
+.merge-icon-floating {
+  width: 80px;
+  height: 80px;
+  animation: float 4s ease-in-out infinite;
+  z-index: 1;
+}
+
+/* 🌀 Floating Animations */
+@keyframes floatLarge {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(5deg);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+}
+
+/* Base Page Layout */
+.merge-page {
+  font-family: 'Inter', sans-serif;
+  background: transparent;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero-style wrapper */
+.hero-wrapper {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1rem 2rem;
+  margin: 1rem;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.04);
+}
+
+/* Main layout container */
+.merge-main {
+  max-width: 1140px;
+  margin: 2rem auto;
+  padding: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Flexbox structure */
+.merge-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.merge-left {
+  flex: 1 1 45%;
+  min-width: 300px;
+}
+
+.merge-right {
+  flex: 1 1 45%;
+  min-width: 300px;
+  max-width: 500px;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .merge-layout {
+    flex-direction: column;
+  }
+
+  .merge-left,
+  .merge-right {
+    width: 100%;
+  }
+}
+
+/* Title Section */
+.merge-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.merge-title-section h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+/* 🎯 Tool Instructions (instead of list) */
+.tool-info {
+  background-color: #f9fafb;
+  padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  margin-bottom: 2rem;
+  z-index: 1;
 }
 
-.merge-container input,
-.merge-container button {
-  margin-top: 12px;
+.tool-info h2 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #111827;
+}
+
+.tool-instructions {
+  font-size: 1rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+/* 📥 Fancy Dropzone */
+.drop-zone {
+  border: 2px dashed #a5b4fc;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(to bottom, #eef2ff, #f5f7ff);
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 24px rgba(99, 102, 241, 0.05);
+}
+
+.drop-zone:hover {
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  background-color: #e0e7ff;
+}
+
+.drop-zone h3 {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.drop-zone p {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.drop-zone input[type="file"] {
   display: block;
-  width: 100%;
+  margin: 1rem auto;
+  font-size: 0.9rem;
+  color: #111827;
 }
 
-button {
-  padding: 10px;
-  margin-top: 20px;
-  background-color: #1e90ff;
-  color: white;
+/* 📁 File List */
+.file-list {
+  margin: 1rem 0 2rem;
+  padding-left: 1rem;
+}
+
+.file-item {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+/* ✅ Buttons */
+.primary-btn {
+  background-color: #4f46e5;
+  color: #ffffff;
+  padding: 0.7rem 1.5rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  transition: background 0.3s ease;
+}
+
+.primary-btn:hover {
+  background-color: #4338ca;
+}
+
+.reset-btn {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: 0.9rem;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
   cursor: pointer;
 }

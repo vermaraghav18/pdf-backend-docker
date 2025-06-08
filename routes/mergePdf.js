@@ -1,44 +1,41 @@
-// routes/mergePdf.js
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const multer = require('multer');
+const os = require('os');
 const { PDFDocument } = require('pdf-lib');
+const { uploadPDF } = require('./uploadMiddleware');
 
 const router = express.Router();
 
-// Multer config — use /tmp for Render compatibility
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, '/tmp'),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-});
-
-const upload = multer({ storage });
-
-router.post('/', upload.array('pdfs', 2), async (req, res) => {
+router.post('/', uploadPDF.array('pdfs', 2), async (req, res) => {
   try {
     const [file1, file2] = req.files;
 
     const pdfDoc = await PDFDocument.create();
 
     for (let file of [file1, file2]) {
-      const filePath = path.join('/tmp', file.filename); // 🔥 Ensure it's /tmp
-      const existingPdfBytes = fs.readFileSync(filePath);
+      const existingPdfBytes = fs.readFileSync(file.path);
       const donorPdfDoc = await PDFDocument.load(existingPdfBytes);
       const copiedPages = await pdfDoc.copyPages(donorPdfDoc, donorPdfDoc.getPageIndices());
       copiedPages.forEach((page) => pdfDoc.addPage(page));
     }
 
-    const mergedPdfBytes = await pdfDoc.save();
+    const outputPath = path.join(os.tmpdir(), `merged-${Date.now()}.pdf`); // ✅ OS-safe path
+    fs.writeFileSync(outputPath, await pdfDoc.save());
 
-    const outputPath = path.join('/tmp', `merged-${Date.now()}.pdf`);
-    fs.writeFileSync(outputPath, mergedPdfBytes);
+    res.download(outputPath, (err) => {
+      if (err) {
+        console.error('Download error:', err);
+        return res.status(500).send('❌ Error sending merged PDF');
+      }
 
-    res.download(outputPath, () => {
-      // Cleanup temp files
-      fs.unlinkSync(path.join('/tmp', file1.filename));
-      fs.unlinkSync(path.join('/tmp', file2.filename));
-      fs.unlinkSync(outputPath);
+      try {
+        fs.unlinkSync(file1.path);
+        fs.unlinkSync(file2.path);
+        fs.unlinkSync(outputPath);
+      } catch (cleanupErr) {
+        console.warn('Cleanup failed:', cleanupErr.message);
+      }
     });
   } catch (err) {
     console.error('Merge error:', err);
