@@ -130,7 +130,7 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   z-index: 1;
-}
+} 
 
 .hero-subtext {
   font-size: 1.2rem;

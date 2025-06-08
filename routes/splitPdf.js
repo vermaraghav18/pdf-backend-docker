@@ -2,20 +2,14 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const multer = require('multer');
 const { PDFDocument } = require('pdf-lib');
 const archiver = require('archiver');
+const { uploadPDF } = require('./uploadMiddleware');
+
 
 const router = express.Router();
 
-// 📁 Save in uploads/ (safe across Windows + Render)
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, '/tmp'),
-  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
-});
-const upload = multer({ storage });
-
-router.post('/', upload.single('pdf'), async (req, res) => {
+router.post('/', uploadPDF.single('pdf'), async (req, res) => {
   try {
     const pageNumber = parseInt(req.body.splitAfter, 10);
     if (!pageNumber || pageNumber < 1) {
