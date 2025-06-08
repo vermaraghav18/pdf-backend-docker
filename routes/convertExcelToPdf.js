@@ -13,10 +13,15 @@ router.post('/', uploadExcel.single('file'), async (req, res) => {
   formData.append('file', fs.createReadStream(filePath));
 
   try {
-    const response = await axios.post(`${process.env.EXCEL_TO_PDF_MICROSERVICE_URL || 'http://localhost:10012'}`, formData, {
-      headers: formData.getHeaders(),
-      responseType: 'stream',
-    });
+    const response = await axios.post(
+  `${process.env.EXCEL_TO_PDF_MICROSERVICE_URL || 'http://0.0.0.0:10012'}`,
+  formData,
+  {
+    headers: formData.getHeaders(),
+    responseType: 'stream',
+  }
+);
+
 
     res.setHeader('Content-Disposition', 'attachment; filename=converted.pdf');
     response.data.pipe(res);
