@@ -1,0 +1,47 @@
+
+/* 🎯 PDF to Word Page Styles */
+
+.pdfword-container {
+  position: relative;
+  background: linear-gradient(to bottom right, #f7faff, #ffffff);
+  margin: 2rem auto;
+  padding: 2rem;
+  max-width: 700px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+}
+
+.pdfword-container h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+}
+
+.pdfword-container input[type="file"] {
+  margin: 1rem 0;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  border: 2px dashed #a5b4fc;
+  width: 100%;
+  background-color: #eef2ff;
+  cursor: pointer;
+}
+
+.pdfword-container button {
+  padding: 0.7rem 1.5rem;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.pdfword-container p {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  color: #374151;
+}

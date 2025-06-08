@@ -1,7 +1,7 @@
-/* ✅ SplitPdfPage.css — Final Design Synced with Merge Page */
+/* ✅ CompressPdfPage.css — Styled Like Merge & Split Tools */
 
-/* 📦 Hero-Style Background Container */
-.split-hero-container {
+/* Hero Container */
+.compress-hero-container {
   position: relative;
   overflow: hidden;
   background: linear-gradient(to bottom right, #f6f9ff, #ffffff);
@@ -13,8 +13,8 @@
   z-index: 0;
 }
 
-/* 🖼️ Floating Background Split Icons */
-.split-float-icon {
+/* Floating Icons */
+.compress-float-icon {
   position: absolute;
   opacity: 0.1;
   z-index: 0;
@@ -36,15 +36,14 @@
   animation-delay: 3s;
 }
 
-/* 📎 Main Split Icon Floating */
-.split-icon-floating {
+.compress-icon-floating {
   width: 80px;
   height: 80px;
   animation: float 4s ease-in-out infinite;
   z-index: 1;
 }
 
-/* 🌀 Floating Animations */
+/* Animations */
 @keyframes floatLarge {
   0%, 100% {
     transform: translateY(0px) rotate(0deg);
@@ -63,8 +62,8 @@
   }
 }
 
-/* Base Page Layout */
-.split-page {
+/* Page Wrapper */
+.compress-page {
   font-family: 'Inter', sans-serif;
   background: transparent;
   min-height: 100vh;
@@ -72,7 +71,7 @@
   flex-direction: column;
 }
 
-.split-main {
+.compress-main {
   max-width: 1140px;
   margin: 2rem auto;
   padding: 1rem;
@@ -80,8 +79,8 @@
   z-index: 1;
 }
 
-/* Flexbox Left-Right Layout */
-.split-layout {
+/* Layout */
+.compress-layout {
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
@@ -89,44 +88,43 @@
   justify-content: space-between;
 }
 
-.split-left {
+.compress-left {
   flex: 1 1 45%;
   min-width: 300px;
 }
 
-.split-right {
+.compress-right {
   flex: 1 1 45%;
   min-width: 300px;
   max-width: 500px;
 }
 
-/* Responsive layout */
 @media (max-width: 768px) {
-  .split-layout {
+  .compress-layout {
     flex-direction: column;
   }
 
-  .split-left,
-  .split-right {
+  .compress-left,
+  .compress-right {
     width: 100%;
   }
 }
 
-/* Title Section */
-.split-title-section {
+/* Title */
+.compress-title-section {
   display: flex;
   align-items: center;
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
-.split-title-section h1 {
+.compress-title-section h1 {
   font-size: 2rem;
   margin-bottom: 0.5rem;
   color: #1f2937;
 }
 
-/* 📘 Tool Instructions */
+/* Tool Instructions */
 .tool-info {
   background-color: #f9fafb;
   padding: 1.5rem;
@@ -148,8 +146,22 @@
   line-height: 1.6;
 }
 
-/* 📥 Dropzone Area */
-.split-dropzone {
+/* Input + Select Styling */
+.compress-dropzone input[type="file"],
+.compress-dropzone select {
+  display: block;
+  margin: 1rem auto;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #c7d2fe;
+  font-size: 0.95rem;
+  color: #111827;
+  width: 90%;
+  background: white;
+}
+
+/* Compress Zone */
+.compress-dropzone {
   border: 2px dashed #a5b4fc;
   border-radius: 16px;
   padding: 2rem;
@@ -162,38 +174,12 @@
   box-shadow: 0 4px 24px rgba(99, 102, 241, 0.05);
 }
 
-.split-dropzone:hover {
+.compress-dropzone:hover {
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
   background-color: #e0e7ff;
 }
 
-.split-dropzone h3 {
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-}
-
-.split-dropzone p {
-  margin-top: 0.5rem;
-  font-size: 0.95rem;
-  color: #374151;
-}
-
-/* Input Styles */
-.split-dropzone input[type="file"],
-.split-dropzone input[type="number"] {
-  display: block;
-  margin: 1rem auto;
-  padding: 0.6rem 1rem;
-  border-radius: 10px;
-  border: 1px solid #c7d2fe;
-  font-size: 0.95rem;
-  color: #111827;
-  width: 90%;
-  background: white;
-}
-
-/* ✅ Buttons */
+/* Buttons */
 .primary-btn {
   background-color: #4f46e5;
   color: #ffffff;
@@ -212,8 +198,8 @@
   background-color: #4338ca;
 }
 
-/* ✅ Message Text */
-.split-message {
+/* Messages */
+.compress-message {
   text-align: center;
   margin-top: 1rem;
   font-size: 0.95rem;

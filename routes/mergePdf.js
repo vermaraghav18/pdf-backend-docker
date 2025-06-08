@@ -20,23 +20,32 @@ router.post('/', uploadPDF.array('pdfs', 2), async (req, res) => {
       copiedPages.forEach((page) => pdfDoc.addPage(page));
     }
 
-    const outputPath = path.join(os.tmpdir(), `merged-${Date.now()}.pdf`); // ✅ OS-safe path
-    fs.writeFileSync(outputPath, await pdfDoc.save());
+    const outputPath = path.join(os.tmpdir(), `merged-${Date.now()}.pdf`);
+    const pdfBytes = await pdfDoc.save();
+    fs.writeFileSync(outputPath, pdfBytes);
 
-    res.download(outputPath, (err) => {
-      if (err) {
-        console.error('Download error:', err);
-        return res.status(500).send('❌ Error sending merged PDF');
-      }
+    // ✅ Stream the file for Render compatibility
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=merged.pdf');
 
+    const readStream = fs.createReadStream(outputPath);
+    readStream.pipe(res);
+
+    readStream.on('close', () => {
       try {
         fs.unlinkSync(file1.path);
         fs.unlinkSync(file2.path);
         fs.unlinkSync(outputPath);
       } catch (cleanupErr) {
-        console.warn('Cleanup failed:', cleanupErr.message);
+        console.warn('Cleanup warning:', cleanupErr.message);
       }
     });
+
+    readStream.on('error', (err) => {
+      console.error('Streaming error:', err.message);
+      res.status(500).send('❌ Error streaming merged PDF');
+    });
+
   } catch (err) {
     console.error('Merge error:', err);
     res.status(500).send('❌ Failed to merge PDFs');

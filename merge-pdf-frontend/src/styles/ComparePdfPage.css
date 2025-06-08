@@ -1,0 +1,188 @@
+/* ✅ ComparePdfPage.css — Styled Like Merge Page */
+
+.compare-hero-container {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(to bottom right, #f9fafe, #ffffff);
+  padding-top: 0.1px;
+  padding-bottom: 0.1px;
+  border-radius: 20px;
+  margin: 2rem;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.04);
+  z-index: 0;
+}
+
+.compare-float-icon {
+  position: absolute;
+  opacity: 0.07;
+  z-index: 0;
+  width: 280px;
+  height: 280px;
+  animation: floatLarge 10s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.1));
+}
+.float-top-left {
+  top: -40px;
+  left: -30px;
+  animation-delay: 0s;
+}
+
+.float-bottom-right {
+  bottom: -40px;
+  right: -30px;
+  animation-delay: 2s;
+}
+
+.compare-icon-floating {
+  width: 70px;
+  height: 70px;
+  animation: float 5s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes floatLarge {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(6deg);
+  }
+}
+
+.compare-page {
+  font-family: 'Inter', sans-serif;
+  background: transparent;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.compare-main {
+  max-width: 1140px;
+  margin: 2rem auto;
+  padding: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.compare-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.compare-left, .compare-right {
+  flex: 1 1 45%;
+  min-width: 300px;
+  max-width: 500px;
+}
+
+@media (max-width: 768px) {
+  .compare-layout {
+    flex-direction: column;
+  }
+  .compare-left, .compare-right {
+    width: 100%;
+  }
+}
+
+.compare-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.compare-title-section h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.tool-info {
+  background-color: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  margin-bottom: 2rem;
+  z-index: 1;
+}
+
+.tool-info h2 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #111827;
+}
+
+.tool-instructions {
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+.compare-dropzone {
+  border: 2px dashed #a5b4fc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  background-color: #eef2ff;
+  margin: 1rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.compare-dropzone input[type="file"] {
+  display: block;
+  margin: 1rem auto;
+}
+
+.primary-btn {
+  background-color: #4f46e5;
+  color: #ffffff;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  margin-right: 1rem;
+}
+
+.reset-btn {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: 0.9rem;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  cursor: pointer;
+}
+
+.compare-message {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.compare-results {
+  margin-top: 2rem;
+  background: #f3f4f6;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+  color: #111827;
+}
+
+.compare-results ul {
+  padding-left: 1rem;
+  margin-top: 1rem;
+  color: #374151;
+}
+
+.compare-results li {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}

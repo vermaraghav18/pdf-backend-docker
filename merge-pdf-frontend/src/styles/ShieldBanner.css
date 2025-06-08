@@ -1,0 +1,80 @@
+.shield-banner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  background: linear-gradient(to right, #f0f4ff, #ffffff);
+  border-radius: 1.5rem;
+  margin: 3rem auto;
+  max-width: 1200px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+.shield-left {
+  flex: 1 1 50%;
+  padding-right: 2rem;
+}
+
+.shield-title {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.shield-description {
+  font-size: 1.1rem;
+  color: #4b5563;
+  margin-bottom: 1.4rem;
+  line-height: 1.6;
+}
+
+.shield-cta {
+  font-weight: 600;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #4338ca;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.shield-cta:hover {
+  background-color: #312e81;
+}
+
+.shield-right {
+  flex: 1 1 45%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.shield-lottie {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ✅ Responsive */
+@media (max-width: 768px) {
+  .shield-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .shield-left {
+    padding-right: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .shield-title {
+    font-size: 1.7rem;
+  }
+
+  .shield-description {
+    font-size: 1rem;
+  }
+}

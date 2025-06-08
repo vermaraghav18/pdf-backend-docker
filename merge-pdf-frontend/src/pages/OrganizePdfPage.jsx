@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+import Lottie from 'lottie-react';
+import successTick from '../assets/successTick.json';
+import OrganizeIcon from '../assets/icons/organize.png';
+import '../styles/MergePdfPage.css';
 import '../styles/OrganizePdfPage.css';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -13,6 +17,7 @@ function OrganizePdfPage() {
   const [message, setMessage] = useState('');
   const [downloadUrl, setDownloadUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -20,6 +25,7 @@ function OrganizePdfPage() {
     setOperations([]);
     setDownloadUrl('');
     setMessage('');
+    setShowAnimation(false);
 
     const fileReader = new FileReader();
     fileReader.onload = async function () {
@@ -81,6 +87,7 @@ function OrganizePdfPage() {
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
       setMessage('✅ Organized PDF is ready!');
+      setShowAnimation(true);
     } catch (err) {
       console.error(err);
       setMessage('❌ Failed to organize PDF');
@@ -90,31 +97,80 @@ function OrganizePdfPage() {
   };
 
   return (
-    <div className="organize-container">
-      <h2>🧩 Organize PDF</h2>
-      <input type="file" accept=".pdf" onChange={handleFileChange} />
-      <div className="thumbnail-grid">
-        {pageImages.map((img, index) => (
-          <div key={index} className="thumbnail-box">
-            <img src={img} alt={`Page ${index + 1}`} />
-            <div className="actions">
-              <button onClick={() => handleRotate(index)}>🔄</button>
-              <button onClick={() => handleDelete(index)}>❌</button>
-              <button onClick={() => handleDuplicate(index)}>➕</button>
+    <div className="merge-hero-container">
+      <div className="merge-page">
+        <main className="merge-main">
+          <div className="merge-layout">
+            {/* ✅ Left Column */}
+            <div className="merge-left">
+              <div className="merge-title-section">
+                <img src={OrganizeIcon} alt="Organize Icon" className="merge-icon-floating" />
+                <div>
+                  <h1>Organize PDF</h1>
+                  <p>Reorder, rotate, delete, or duplicate pages in your PDF.</p>
+                </div>
+              </div>
+
+              <section className="tool-info">
+                <h2>Tool Info</h2>
+                <p className="tool-instructions">
+                  Upload your PDF to preview all pages.<br />
+                  Use the 🔄, ❌, and ➕ buttons to modify the layout.<br />
+                  Click <strong>“Submit & Download”</strong> to save changes.
+                </p>
+              </section>
             </div>
-            <p>Page {index + 1}</p>
+
+            {/* ✅ Right Column */}
+            <div className="merge-right">
+              <div className="drop-zone">
+                <h3>📥 Drop or Choose a PDF</h3>
+                <input type="file" accept="application/pdf" onChange={handleFileChange} />
+
+                <div className="thumbnail-grid">
+                  {pageImages.map((img, index) => (
+                    <div key={index} className="thumbnail-box">
+                      <img src={img} alt={`Page ${index + 1}`} />
+                      <div className="actions">
+                        <button onClick={() => handleRotate(index)}>🔄</button>
+                        <button onClick={() => handleDelete(index)}>❌</button>
+                        <button onClick={() => handleDuplicate(index)}>➕</button>
+                      </div>
+                      <p>Page {index + 1}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {pageImages.length > 0 && (
+                  <button className="primary-btn" onClick={handleSubmit} disabled={loading}>
+                    {loading ? 'Processing...' : 'Submit & Download'}
+                  </button>
+                )}
+
+                {message && <p style={{ textAlign: 'center', marginTop: '1rem' }}>{message}</p>}
+
+                {downloadUrl && (
+                  <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                    <a href={downloadUrl} download="organized.pdf" className="primary-btn">
+                      📥 Download PDF
+                    </a>
+                  </div>
+                )}
+
+                {showAnimation && (
+                  <div style={{ display: 'flex', justifyContent: 'center', margin: '2rem 0' }}>
+                    <Lottie animationData={successTick} loop={false} style={{ width: 150, height: 150 }} />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        ))}
+        </main>
       </div>
-      {pageImages.length > 0 && (
-        <button className="submit-btn" onClick={handleSubmit} disabled={loading}>
-          {loading ? 'Processing...' : 'Submit & Download'}
-        </button>
-      )}
-      <p>{message}</p>
-      {downloadUrl && (
-        <a href={downloadUrl} download="organized.pdf" className="download-link">📥 Download PDF</a>
-      )}
+
+      {/* ✅ Floating Icons */}
+      <img src={OrganizeIcon} alt="Organize" className="merge-float-icon float-top-left" />
+      <img src={OrganizeIcon} alt="Organize" className="merge-float-icon float-bottom-right" />
     </div>
   );
 }

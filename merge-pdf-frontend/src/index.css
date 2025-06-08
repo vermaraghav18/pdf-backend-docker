@@ -123,10 +123,10 @@ body {
 
 .hero-title {
   font-family: 'Poppins', sans-serif;
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   font-weight: 700;
   line-height: 1.2;
-  background: linear-gradient(to right, #6366f1, #8b5cf6);
+  background: linear-gradient(to right, #000000, #000000);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   z-index: 1;
@@ -158,11 +158,13 @@ body {
 }
 
 .hero-lottie {
-  width: 400px;
-  max-width: 45%;
-  z-index: 1;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: none;         /* ✅ Remove width cap */
+  padding: 0;
 }
-
 /* 🧩 Tool Grid */
 .tool-grid {
   display: grid;
@@ -272,3 +274,43 @@ body {
   margin-bottom: 0.5rem;
   color: #1f2937;
 }
+
+.hero-image-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.hero-blob-container {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+}
+
+.hero-image {
+  max-width: 520px;        /* ✅ Increase this to desired width */
+  height: auto;
+  z-index: 2;
+  position: relative;
+  transform: translateY(-10px);
+}
+
+
+/* ✅ Blobs behind image */
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  filter: blur(50px);
+  opacity:0.1 ;
+}
+.hero-blob-pink {
+  width: 240px;
+  height: 240px;
+  background: #f472b6; /* Pink */
+  bottom: -40px;
+  right: -40px;
+}
+

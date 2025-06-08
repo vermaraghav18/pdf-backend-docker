@@ -4,10 +4,12 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Lottie from 'lottie-react';
 import HeroAnimation from './assets/hero-lottie.json';
+import HeroSubBanner from './components/HeroSubBanner';
+import ShieldBanner from './components/ShieldBanner';
+
 import './index.css';
 
 import MergeIcon from './assets/icons/merge.png';
-import SplitIcon from './assets/icons/split.png';
 
 // ✅ Import All Feature Pages
 import MergePdfPage from './pages/MergePdfPage';
@@ -36,28 +38,28 @@ import JpgToPdfPage from './pages/JpgToPdfPage';
 
 // ✅ Tool Config
 const tools = [
-  { name: 'Merge PDF', icon: MergeIcon, path: '/merge', tooltip: 'Combine multiple PDFs into one', description: 'Combine PDFs in the order you want with the easiest PDF merger available.' },
-  { name: 'Split PDF', icon: SplitIcon, path: '/split', tooltip: 'Split one PDF into multiple files', description: 'Split PDF pages into separate files in seconds.' },
-  { name: 'Compress PDF', icon: '📉', path: '/compress' },
-  { name: 'Compare PDF', icon: '🆚', path: '/compare' },
-  { name: 'PDF to Word', icon: '📄', path: '/pdf-to-word' },
-  { name: 'Word to PDF', icon: '📝', path: '/word-to-pdf' },
-  { name: 'PDF to Excel', icon: '📊', path: '/pdf-to-excel' },
-  { name: 'Excel to PDF', icon: '📈', path: '/excel-to-pdf' },
-  { name: 'PDF to PPT', icon: '📋', path: '/pdf-to-ppt' },
-  { name: 'PPT to PDF', icon: '📤', path: '/ppt-to-pdf' },
-  { name: 'Rotate PDF', icon: '🔄', path: '/rotate' },
-  { name: 'Organize PDF', icon: '📂', path: '/organize' },
-  { name: 'Repair PDF', icon: '🛠️', path: '/repair' },
-  { name: 'Add Page Numbers', icon: '🔢', path: '/add-page-numbers' },
-  { name: 'Redact PDF', icon: '🕶️', path: '/redact' },
-  { name: 'Protect PDF', icon: '🔐', path: '/protect' },
-  { name: 'Unlock PDF', icon: '🔓', path: '/unlock' },
-  { name: 'Crop PDF', icon: '✂️', path: '/crop' },
-  { name: 'Sign PDF', icon: '✍️', path: '/sign-pdf' },
-  { name: 'Watermark PDF', icon: '💧', path: '/watermark-pdf' },
-  { name: 'PDF to JPG', icon: '🖼️', path: '/pdf-to-jpg' },
-  { name: 'JPG to PDF', icon: '📷', path: '/jpg-to-pdf' },
+ { name: 'Merge PDF', icon: MergeIcon, path: '/merge', tooltip: 'Combine multiple PDFs into one', description: 'Combine PDFs in the order you want with the easiest PDF merger available.' },
+  { name: 'Split PDF', icon: MergeIcon, path: '/split', tooltip: 'Split one PDF into multiple files', description: 'Split PDF pages into separate files in seconds.' },
+  { name: 'Compress PDF', icon: MergeIcon, path: '/compress', tooltip: 'Reduce PDF file size', description: 'Shrink PDF file size without compromising quality.' },
+  { name: 'Compare PDF', icon: MergeIcon, path: '/compare', tooltip: 'Visually compare two PDFs', description: 'Detect differences between two PDF documents side by side.' },
+  { name: 'PDF to Word', icon: MergeIcon, path: '/pdf-to-word', tooltip: 'Convert PDF to Word document', description: 'Easily convert your PDF file into an editable Word document.' },
+  { name: 'Word to PDF', icon: MergeIcon, path: '/word-to-pdf', tooltip: 'Convert Word document to PDF', description: 'Turn DOCX files into PDFs quickly and securely.' },
+  { name: 'PDF to Excel', icon: MergeIcon, path: '/pdf-to-excel', tooltip: 'Convert PDF to Excel spreadsheet', description: 'Extract tables from PDF and convert to Excel format (.xlsx).' },
+  { name: 'Excel to PDF', icon: MergeIcon, path: '/excel-to-pdf', tooltip: 'Convert Excel spreadsheet to PDF', description: 'Convert your Excel files into PDFs while preserving layout.' },
+  { name: 'PDF to PPT', icon: MergeIcon, path: '/pdf-to-ppt', tooltip: 'Convert PDF to PowerPoint slides', description: 'Transform your PDF into editable PowerPoint slides (.pptx).' },
+  { name: 'PPT to PDF', icon: MergeIcon, path: '/ppt-to-pdf', tooltip: 'Convert PowerPoint to PDF', description: 'Convert your presentation into a clean PDF document.' },
+  { name: 'Rotate PDF', icon: MergeIcon, path: '/rotate', tooltip: 'Rotate PDF pages', description: 'Rotate selected pages within your PDF file.' },
+  { name: 'Organize PDF', icon: MergeIcon, path: '/organize', tooltip: 'Reorder, delete, or duplicate pages', description: 'Easily rearrange and manage pages inside a PDF.' },
+  { name: 'Repair PDF', icon: MergeIcon, path: '/repair', tooltip: 'Fix corrupted or broken PDFs', description: 'Restore damaged or unreadable PDF files instantly.' },
+  { name: 'Add Page Numbers', icon: MergeIcon, path: '/add-page-numbers', tooltip: 'Add page numbers to PDF', description: 'Insert page numbers into your PDF file quickly.' },
+  { name: 'Redact PDF', icon: MergeIcon, path: '/redact', tooltip: 'Hide sensitive content in PDF', description: 'Black out or redact confidential text in your PDF.' },
+  { name: 'Protect PDF', icon: MergeIcon, path: '/protect', tooltip: 'Add password protection to PDF', description: 'Secure your PDF by locking it with a custom password.' },
+  { name: 'Unlock PDF', icon: MergeIcon, path: '/unlock', tooltip: 'Remove password from PDF', description: 'Unlock password-protected PDF files for editing or printing.' },
+  { name: 'Crop PDF', icon: MergeIcon, path: '/crop', tooltip: 'Crop unwanted margins from PDF', description: 'Trim your PDF pages using percentage-based cropping.' },
+  { name: 'Sign PDF', icon: MergeIcon, path: '/sign-pdf', tooltip: 'Add your signature to a PDF', description: 'Type or draw your signature and place it anywhere in your PDF.' },
+  { name: 'Watermark PDF', icon: MergeIcon, path: '/watermark-pdf', tooltip: 'Add text watermark to PDF', description: 'Overlay watermark text on your PDF file with custom opacity.' },
+  { name: 'PDF to JPG', icon: MergeIcon, path: '/pdf-to-jpg', tooltip: 'Convert PDF pages to JPG images', description: 'Turn every page in your PDF into high-resolution JPGs.' },
+  { name: 'JPG to PDF', icon: MergeIcon, path: '/jpg-to-pdf', tooltip: 'Convert JPG images to a PDF', description: 'Combine JPG files into a single PDF document.' },
 ];
 
 function App() {
@@ -87,9 +89,14 @@ function App() {
                   <Link to="/merge" className="hero-cta">Get Started</Link>
                 </motion.div>
 
-                <motion.div className="hero-lottie" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }}>
-                  <Lottie animationData={HeroAnimation} loop={true} />
-                </motion.div>
+                <motion.div className="hero-image-wrapper" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }}>
+                <div className="hero-blob-container">
+                  <div className="hero-blob hero-blob-purple"></div>
+                  <div className="hero-blob hero-blob-pink"></div>
+                  <img src="/src/assets/images/herosection.png" alt="PDF Tools UI" className="hero-image" />
+                </div>
+              </motion.div>
+
               </section>
 
               <section className="tool-grid">
@@ -114,7 +121,9 @@ function App() {
                   </motion.div>
                 ))}
               </section>
-
+                
+                <HeroSubBanner /> 
+                <ShieldBanner />
               <footer className="footer">
                 <div className="footer-logo">📎 PDF Tools</div>
                 <div className="footer-links">

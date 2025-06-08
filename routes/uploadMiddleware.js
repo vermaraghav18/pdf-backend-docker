@@ -1,18 +1,17 @@
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const os = require('os');
 
-// ➕ Ensure /uploads folder exists
-const uploadDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+// ✅ Use OS-safe tmp directory for all uploads
+const uploadDir = os.tmpdir();
 
-// ➕ Shared storage config
+// ✅ Shared storage config using safe tmp location
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
 });
 
-// ➕ Dynamic uploader generator
+// ✅ Dynamic uploader generator with MIME filter
 function createUploader(allowedMimeTypes) {
   return multer({
     storage,
@@ -24,7 +23,7 @@ function createUploader(allowedMimeTypes) {
   });
 }
 
-// ➕ Preconfigured uploaders by type
+// ✅ Preconfigured uploaders by file type
 const uploadPDF = createUploader(['application/pdf']);
 const uploadWord = createUploader([
   'application/msword',
@@ -40,7 +39,7 @@ const uploadPPT = createUploader([
 ]);
 const uploadImage = createUploader(['image/jpeg', 'image/png', 'image/webp']);
 
-// ➕ Export them for per-route usage
+// ✅ Export all uploaders
 module.exports = {
   uploadPDF,
   uploadWord,

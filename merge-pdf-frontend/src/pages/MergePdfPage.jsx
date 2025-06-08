@@ -40,10 +40,11 @@ function MergePdfPage() {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:10000'}/api/merge`,
-        formData,
-        { responseType: 'blob' }
-      );
+  `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:10000'}/api/merge`,
+  formData,
+  { responseType: 'blob' }
+);
+
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
