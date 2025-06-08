@@ -50,11 +50,9 @@ RUN echo '#!/bin/sh' > start.sh && \
     echo 'uvicorn jpg-to-pdf-microservice.jpg_to_pdf:app --host 0.0.0.0 --port 10008 > jpg2pdf.log 2>&1 &' >> start.sh && \
     echo  'uvicorn ppt-to-pdf-microservice.main:app --host 0.0.0.0 --port 10009 > ppt2pdf.log 2>&1 &' >> start.sh && \
    echo 'uvicorn word-to-pdf-microservice.main:app --host 0.0.0.0 --port 10010 > word2pdf.log 2>&1 &' >> start.sh && \
-    echo 'echo "🟢 Starting Excel to PDF microservice..."' >> start.sh && \
-    echo 'uvicorn excel-to-pdf-microservice.main:app --host 0.0.0.0 --port 10012' >> start.sh && \
+     echo 'uvicorn excel-to-pdf-microservice.main:app --host 0.0.0.0 --port 10012 > excel2pdf.log 2>&1 &' >> start.sh && \
     echo 'node server.js' >> start.sh && \
     chmod +x start.sh
-
 
 # Expose all required ports
 EXPOSE 10000 10001 10002 10003 10004 10005 10006 10007 10008 10009 10010 10012
