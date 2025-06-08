@@ -43,7 +43,8 @@ router.post('/', uploadExcel.single('file'), async (req, res) => {
       output_format: 'pdf',
       engine: 'libreoffice',
       input: 'upload',
-      file: uploadParams.key, // The file key uploaded in Step 2
+      file: importTask.data.data.id, // use import task ID, not uploadParams.key
+
     }, {
       headers: { Authorization: `Bearer ${apiKey}` }
     });
