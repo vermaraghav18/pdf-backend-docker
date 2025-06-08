@@ -22,16 +22,17 @@ function AddPageNumbers() {
   const handleSubmit = async () => {
     if (!file) return alert("Upload a PDF");
     const formData = new FormData();
-    formData.append('pdf', file);
+    formData.append('file', file); // fix the key to match multer
+
 
     setLoading(true);
     setMessage('📡 Adding page numbers...');
 
     try {
-      const res = await axios.post(
-        'https://pdf-backend-docker.onrender.com/api/add-page-numbers',
-        formData,
-        { responseType: 'blob' }
+     const res = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/add-page-numbers`,
+      formData,
+      { responseType: 'blob' }
       );
       const blob = new Blob([res.data], { type: 'application/pdf' });
       setDownloadUrl(URL.createObjectURL(blob));

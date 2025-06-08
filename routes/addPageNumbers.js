@@ -26,7 +26,8 @@ router.post('/', uploadPDF.single('file'), async (req, res)=> {
     });
 
     const outputBytes = await pdfDoc.save();
-    const outputPath = path.join('uploads', `numbered-${Date.now()}.pdf`);
+    const outputPath = path.join('/tmp', `numbered-${Date.now()}.pdf`);
+
     fs.writeFileSync(outputPath, outputBytes);
 
     res.download(outputPath, 'numbered.pdf', () => {
