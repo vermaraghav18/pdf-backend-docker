@@ -1,5 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 import os
 import uuid
 import shutil
@@ -11,7 +11,7 @@ app = FastAPI()
 async def convert_excel_to_pdf(file: UploadFile = File(...)):
     file_ext = os.path.splitext(file.filename)[-1].lower()
     if file_ext not in [".xlsx", ".xls"]:
-        return {"error": "Only .xlsx and .xls files are supported."}
+        return JSONResponse(status_code=400, content={"error": "Only .xlsx and .xls files are supported."})
 
     temp_id = uuid.uuid4().hex
     input_path = f"temp_{temp_id}{file_ext}"
@@ -34,20 +34,20 @@ async def convert_excel_to_pdf(file: UploadFile = File(...)):
         print("🔴 LibreOffice stderr:", result.stderr)
 
         if result.returncode != 0:
-            return {"error": f"LibreOffice failed: {result.stderr}"}
+            return JSONResponse(status_code=500, content={"error": f"LibreOffice failed: {result.stderr}"})
 
-        # If output file exists, rename it; otherwise, fail gracefully
+        # Try both naming variants
         if os.path.exists(output_guess):
             os.rename(output_guess, output_final)
         elif os.path.exists(output_guess + ".pdf"):
             os.rename(output_guess + ".pdf", output_final)
         else:
-            return {"error": "Output PDF not generated"}
+            return JSONResponse(status_code=500, content={"error": "❌ Output PDF not found after conversion"})
 
         return FileResponse(output_final, media_type="application/pdf", filename="converted.pdf")
 
     except Exception as e:
-        return {"error": f"Exception: {str(e)}"}
+        return JSONResponse(status_code=500, content={"error": f"Unhandled exception: {str(e)}"})
 
     finally:
         if os.path.exists(input_path):
