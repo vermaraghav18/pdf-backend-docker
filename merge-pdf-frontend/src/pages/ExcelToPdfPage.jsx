@@ -28,7 +28,7 @@ function ExcelToPdfPage() {
       if (!baseUrl) throw new Error('VITE_API_BASE_URL is not defined.');
 
       const response = await axios.post(
-        `${baseUrl}/api/excel-to-pdf`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/excel-to-pdf`,
         formData,
         { responseType: 'blob' }
       );
