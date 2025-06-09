@@ -1,90 +1,47 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const FormData = require('form-data');
-const axios = require('axios');
+const { exec } = require('child_process');
 const { uploadExcel } = require('./uploadMiddleware');
-require('dotenv').config();
 
 const router = express.Router();
 
+// POST /api/excel-to-pdf
 router.post('/', uploadExcel.single('file'), async (req, res) => {
-  const filePath = req.file.path;
-  const apiKey = process.env.CLOUDCONVERT_API_KEY;
-
-  if (!apiKey) {
-    return res.status(500).json({ error: 'CloudConvert API key is missing in .env' });
-  }
+  const inputPath = req.file.path;
+  const outputDir = '/tmp'; // Safe for Render
+  const fileNameNoExt = path.parse(req.file.originalname).name;
+  const outputPath = path.join(outputDir, `${fileNameNoExt}.pdf`);
 
   try {
-    // Step 1: Create a job with import, convert, and export tasks
-    const jobRes = await axios.post('https://api.cloudconvert.com/v2/jobs', {
-      tasks: {
-        'import-my-file': {
-          operation: 'import/upload'
-        },
-        'convert-my-file': {
-          operation: 'convert',
-          input: 'import-my-file',
-          input_format: 'xlsx',
-          output_format: 'pdf',
-          engine: 'libreoffice'
-        },
-        'export-my-file': {
-          operation: 'export/url',
-          input: 'convert-my-file'
+    // ✅ Convert Excel → PDF using LibreOffice CLI
+    await new Promise((resolve, reject) => {
+      exec(
+        `libreoffice --headless --convert-to pdf --outdir ${outputDir} ${inputPath}`,
+        (err, stdout, stderr) => {
+          if (err) return reject(`LibreOffice error: ${stderr}`);
+          resolve();
         }
-      }
-    }, {
-      headers: { Authorization: `Bearer ${apiKey}` }
+      );
     });
 
-    const jobId = jobRes.data.data.id;
-    const importTask = jobRes.data.data.tasks.find(t => t.name === 'import-my-file');
-    const uploadUrl = importTask.result.form.url;
-    const uploadParams = importTask.result.form.parameters;
+    if (!fs.existsSync(outputPath)) {
+      return res.status(500).send('❌ PDF not created. Conversion failed.');
+    }
 
-    // Step 2: Upload file to CloudConvert using multipart/form-data
-    const form = new FormData();
-    Object.entries(uploadParams).forEach(([key, value]) => form.append(key, value));
-    form.append('file', fs.createReadStream(filePath));
-
-    await axios.post(uploadUrl, form, {
-      headers: form.getHeaders()
+    // ✅ Send final PDF
+    res.download(outputPath, `${fileNameNoExt}.pdf`, (err) => {
+      // Cleanup
+      fs.unlinkSync(inputPath);
+      fs.unlinkSync(outputPath);
+      if (err) console.error('Download error:', err);
     });
-
-    // Step 3: Wait for job to finish
-    let exportedFileUrl = null;
-    for (let i = 0; i < 12; i++) {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      const poll = await axios.get(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
-        headers: { Authorization: `Bearer ${apiKey}` }
-      });
-
-      const exportTask = poll.data.data.tasks.find(t => t.name === 'export-my-file');
-      if (exportTask.status === 'finished' && exportTask.result?.files?.[0]?.url) {
-        exportedFileUrl = exportTask.result.files[0].url;
-        break;
-      }
-    }
-
-    if (!exportedFileUrl) {
-      return res.status(500).json({ error: 'Conversion timed out or failed.' });
-    }
-
-    // Step 4: Stream converted PDF to response
-    const fileStream = await axios.get(exportedFileUrl, { responseType: 'stream' });
-    res.setHeader('Content-Disposition', 'attachment; filename=converted.pdf');
-    fileStream.data.pipe(res);
-
-  } catch (error) {
-    console.error('🔴 CloudConvert Excel to PDF Error:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Conversion failed. ' + (error.response?.data?.message || error.message) });
-  } finally {
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  } catch (err) {
+    console.error('🔴 Excel to PDF Error:', err);
+    if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+    if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+    res.status(500).send('❌ Conversion failed');
   }
 });
 
 module.exports = router;
-  
- 
