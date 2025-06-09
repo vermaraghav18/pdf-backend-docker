@@ -10,76 +10,78 @@ const router = express.Router();
 
 router.post('/', uploadExcel.single('file'), async (req, res) => {
   const filePath = req.file.path;
-  const fileName = path.basename(filePath);
   const apiKey = process.env.CLOUDCONVERT_API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'CloudConvert API key not set in .env' });
+    return res.status(500).json({ error: 'CloudConvert API key is missing in .env' });
   }
 
   try {
-    // Step 1: Upload file to CloudConvert import task
-    const importTask = await axios.post('https://api.cloudconvert.com/v2/import/upload', {
-      name: 'import-my-excel'
+    // Step 1: Create a job with import, convert, and export tasks
+    const jobRes = await axios.post('https://api.cloudconvert.com/v2/jobs', {
+      tasks: {
+        'import-my-file': {
+          operation: 'import/upload'
+        },
+        'convert-my-file': {
+          operation: 'convert',
+          input: 'import-my-file',
+          input_format: 'xlsx',
+          output_format: 'pdf',
+          engine: 'libreoffice'
+        },
+        'export-my-file': {
+          operation: 'export/url',
+          input: 'convert-my-file'
+        }
+      }
     }, {
       headers: { Authorization: `Bearer ${apiKey}` }
     });
 
-    const uploadUrl = importTask.data.data.result.form.url;
-    const uploadParams = importTask.data.data.result.form.parameters;
+    const jobId = jobRes.data.data.id;
+    const importTask = jobRes.data.data.tasks.find(t => t.name === 'import-my-file');
+    const uploadUrl = importTask.result.form.url;
+    const uploadParams = importTask.result.form.parameters;
 
-    // Step 2: Upload Excel file to CloudConvert
+    // Step 2: Upload file to CloudConvert using multipart/form-data
     const form = new FormData();
-    Object.entries(uploadParams).forEach(([key, val]) => form.append(key, val));
+    Object.entries(uploadParams).forEach(([key, value]) => form.append(key, value));
     form.append('file', fs.createReadStream(filePath));
 
     await axios.post(uploadUrl, form, {
       headers: form.getHeaders()
     });
 
-    // Step 3: Create convert task
-    const convertTask = await axios.post('https://api.cloudconvert.com/v2/convert', {
-      input_format: 'xlsx',
-      output_format: 'pdf',
-      engine: 'libreoffice',
-      input: 'upload',
-      file: importTask.data.data.id, // use import task ID, not uploadParams.key
-
-    }, {
-      headers: { Authorization: `Bearer ${apiKey}` }
-    });
-
-    const taskId = convertTask.data.data.id;
-
-    // Step 4: Poll for task completion
-    let convertedFileUrl = null;
-    for (let i = 0; i < 10; i++) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const statusCheck = await axios.get(`https://api.cloudconvert.com/v2/tasks/${taskId}`, {
+    // Step 3: Wait for job to finish
+    let exportedFileUrl = null;
+    for (let i = 0; i < 12; i++) {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      const poll = await axios.get(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
         headers: { Authorization: `Bearer ${apiKey}` }
       });
 
-      const taskData = statusCheck.data.data;
-      if (taskData.status === 'finished' && taskData.result?.files?.[0]?.url) {
-        convertedFileUrl = taskData.result.files[0].url;
+      const exportTask = poll.data.data.tasks.find(t => t.name === 'export-my-file');
+      if (exportTask.status === 'finished' && exportTask.result?.files?.[0]?.url) {
+        exportedFileUrl = exportTask.result.files[0].url;
         break;
       }
     }
 
-    if (!convertedFileUrl) {
-      return res.status(500).json({ error: 'Conversion failed or timed out.' });
+    if (!exportedFileUrl) {
+      return res.status(500).json({ error: 'Conversion timed out or failed.' });
     }
 
-    // Step 5: Stream the converted PDF to response
-    const pdfResponse = await axios.get(convertedFileUrl, { responseType: 'stream' });
+    // Step 4: Stream converted PDF to response
+    const fileStream = await axios.get(exportedFileUrl, { responseType: 'stream' });
     res.setHeader('Content-Disposition', 'attachment; filename=converted.pdf');
-    pdfResponse.data.pipe(res);
+    fileStream.data.pipe(res);
 
-  } catch (err) {
-    console.error('🔴 CloudConvert Excel → PDF error:', err.message);
-    res.status(500).json({ error: 'Conversion failed. ' + err.message });
+  } catch (error) {
+    console.error('🔴 CloudConvert Excel to PDF Error:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Conversion failed. ' + (error.response?.data?.message || error.message) });
   } finally {
-    fs.unlinkSync(filePath); // Clean temp file
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   }
 });
 
