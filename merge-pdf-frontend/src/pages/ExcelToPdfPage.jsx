@@ -23,8 +23,12 @@ function ExcelToPdfPage() {
 
     try {
       setLoading(true);
+
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      if (!baseUrl) throw new Error('VITE_API_BASE_URL is not defined.');
+
       const response = await axios.post(
-        'https://<your-backend-url>/api/excel-to-pdf',
+        `${baseUrl}/api/excel-to-pdf`,
         formData,
         { responseType: 'blob' }
       );
@@ -33,12 +37,14 @@ function ExcelToPdfPage() {
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
       link.download = selectedFile.name.replace(/\.(xlsx|xls)$/i, '.pdf');
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
 
       setMessage('✅ File converted and downloaded.');
     } catch (error) {
       setMessage('❌ Conversion failed.');
-      console.error(error);
+      console.error('🛑 Excel to PDF error:', error);
     } finally {
       setLoading(false);
     }
