@@ -1,4 +1,0 @@
-fastapi
-uvicorn
-pikepdf
-python-multipart

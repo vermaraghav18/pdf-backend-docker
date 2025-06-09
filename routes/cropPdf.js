@@ -1,44 +1,54 @@
 const express = require('express');
-const router = express.Router();
-const axios = require('axios');
+const multer = require('multer');
 const fs = require('fs');
-const FormData = require('form-data');
-const { uploadPDF } = require('./uploadMiddleware');
+const path = require('path');
+const { PDFDocument } = require('pdf-lib');
 
+const router = express.Router();
+const upload = multer({ dest: '/tmp' });
 
-router.post('/', uploadPDF.single('pdf'), async (req, res) => {
+router.post('/', upload.single('file'), async (req, res) => {
+  const inputPath = req.file.path;
+  const ext = path.extname(req.file.originalname).toLowerCase();
+
+  // ✅ Validate file
+  if (ext !== '.pdf') {
+    fs.unlinkSync(inputPath);
+    return res.status(400).send('❌ Only PDF files are supported');
+  }
+
+  // ✅ Parse crop percentages
+  const topPct = parseFloat(req.body.top) || 0;
+  const bottomPct = parseFloat(req.body.bottom) || 0;
+  const leftPct = parseFloat(req.body.left) || 0;
+  const rightPct = parseFloat(req.body.right) || 0;
+
   try {
-    const filePath = req.file.path; // ✅ Correct path
-    const {
-  top_percent,
-  bottom_percent,
-  left_percent,
-  right_percent
-} = req.body;
+    const inputBytes = fs.readFileSync(inputPath);
+    const pdfDoc = await PDFDocument.load(inputBytes);
 
+    const pages = pdfDoc.getPages();
+    for (const page of pages) {
+      const { width, height } = page.getSize();
 
-    const formData = new FormData();
-    formData.append('file', fs.createReadStream(filePath));
-formData.append('top_percent', top_percent);
-formData.append('bottom_percent', bottom_percent);
-formData.append('left_percent', left_percent);
-formData.append('right_percent', right_percent);
+      const left = (leftPct / 100) * width;
+      const right = width - (rightPct / 100) * width;
+      const bottom = (bottomPct / 100) * height;
+      const top = height - (topPct / 100) * height;
 
+      page.setCropBox(left, bottom, right - left, top - bottom);
+    }
 
-    const response = await axios.post('http://127.0.0.1:10004/', formData, {
-      headers: formData.getHeaders(),
-      responseType: 'stream',
-    });
+    const croppedBytes = await pdfDoc.save();
+    res.setHeader('Content-Disposition', 'attachment; filename=cropped.pdf');
+    res.contentType('application/pdf');
+    res.send(croppedBytes);
 
-    res.setHeader('Content-Type', 'application/pdf');
-    response.data.pipe(res);
-
-    response.data.on('end', () => {
-      fs.unlinkSync(filePath);
-    });
+    fs.unlinkSync(inputPath);
   } catch (err) {
-    console.error('Crop PDF Error:', err.message);
-    res.status(500).send('Failed to crop PDF');
+    console.error('🔴 Crop PDF Error:', err.message);
+    if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+    res.status(500).send('❌ Failed to crop PDF');
   }
 });
 

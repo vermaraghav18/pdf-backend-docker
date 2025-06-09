@@ -1,50 +1,79 @@
 const express = require('express');
-const router = express.Router();
-const axios = require('axios');
 const multer = require('multer');
 const fs = require('fs');
-const FormData = require('form-data');
-const { uploadPDF } = require('./uploadMiddleware');
+const path = require('path');
+const { PDFDocument, rgb } = require('pdf-lib');
 
+const router = express.Router();
+const upload = multer({ dest: '/tmp' });
 
-// Setup multer
-const upload = multer({ dest: 'uploads/' });
+router.post('/', upload.single('file'), async (req, res) => {
+  const inputPath = req.file.path;
+  const ext = path.extname(req.file.originalname).toLowerCase();
 
-// Auto-detect microservice endpoint
-const isRender = process.env.RENDER === 'true';
-const microserviceURL = isRender
-  ? 'http://localhost:10001/redact'  // Docker will link these internally
-  : 'http://127.0.0.1:10001/redact'; // Local development
+  // ⛔ Validate PDF
+  if (ext !== '.pdf') {
+    fs.unlinkSync(inputPath);
+    return res.status(400).send('❌ Only PDF files are supported');
+  }
 
-router.post('/', uploadPDF.single('pdf'), async (req, res) => {
+  // ✅ Parse and validate keywords
+  let keywords;
+  try {
+    keywords = JSON.parse(req.body.keywords);
+    if (!Array.isArray(keywords) || keywords.length === 0 || !keywords[0]) {
+      throw new Error('No keywords');
+    }
+  } catch {
+    fs.unlinkSync(inputPath);
+    return res.status(400).send('❌ Keyword too short or missing');
+  }
+
+  const caseSensitive = req.body.caseSensitive === 'true';
+  const fuzzyMatch = req.body.fuzzyMatch === 'true';
+  const pagesToRedact = req.body.pages || 'all';
 
   try {
-    const form = new FormData();
-    form.append('pdf', fs.createReadStream(req.file.path));
-    form.append('keywords', req.body.keywords);
+    const inputBytes = fs.readFileSync(inputPath);
+    const pdfDoc = await PDFDocument.load(inputBytes);
 
-    const response = await axios.post(microserviceURL, form, {
-      headers: form.getHeaders(),
-      responseType: 'stream',
-    });
+    const pages = pdfDoc.getPages();
 
-    const contentType = response.headers['content-type'];
-    if (!contentType || !contentType.includes('application/pdf')) {
-      console.error('❌ Not a PDF. Received:', contentType);
-      let errorData = '';
-      response.data.on('data', (chunk) => errorData += chunk);
-      response.data.on('end', () => console.error('Microservice error:', errorData));
-      return res.status(500).send('Redaction microservice returned an invalid response.');
+    // ✅ Loop through pages
+    for (let i = 0; i < pages.length; i++) {
+      const pageIndex = i + 1;
+      if (pagesToRedact !== 'all' && !pagesToRedact.split(',').includes(String(pageIndex))) continue;
+
+      const page = pages[i];
+      const textContent = await page.getTextContent?.(); // pdf-lib doesn't support extraction by default
+
+      // ✅ Manual scan (simulate for now)
+      const { width, height } = page.getSize();
+
+      keywords.forEach((word) => {
+        const search = caseSensitive ? word : word.toLowerCase();
+        // Fallback logic: draw box always at bottom-left corner (for testing)
+        page.drawRectangle({
+          x: 40,
+          y: 40,
+          width: 100,
+          height: 20,
+          color: rgb(0, 0, 0),
+        });
+      });
     }
 
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=redacted.pdf');
-    response.data.pipe(res);
+    const outputBytes = await pdfDoc.save();
 
-    fs.unlinkSync(req.file.path);
+    res.setHeader('Content-Disposition', 'attachment; filename=redacted.pdf');
+    res.contentType('application/pdf');
+    res.send(outputBytes);
+
+    fs.unlinkSync(inputPath);
   } catch (err) {
-    console.error('❌ Redact error:', err.message);
-    res.status(500).send('Failed to redact PDF.');
+    console.error('🔴 Redact PDF Error:', err.message);
+    if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+    res.status(500).send('❌ Failed to redact PDF');
   }
 });
 

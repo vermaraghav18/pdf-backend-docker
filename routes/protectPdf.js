@@ -1,44 +1,62 @@
 const express = require('express');
-const router = express.Router();
-const axios = require('axios');
+const multer = require('multer');
 const fs = require('fs');
-const FormData = require('form-data');
-const { uploadPDF } = require('./uploadMiddleware');
+const path = require('path');
+const os = require('os');
+const { exec } = require('child_process');
 
-// Auto-detect microservice endpoint
-const isRender = process.env.RENDER === 'true';
-const microserviceURL = isRender
-  ? 'http://localhost:10001/redact'
-  : 'http://127.0.0.1:10001/redact';
+const router = express.Router();
 
-router.post('/', uploadPDF.single('pdf'), async (req, res) => {
+// ✅ Use OS-safe temp directory for Windows/Linux/Render compatibility
+const upload = multer({ dest: os.tmpdir() });
+
+router.post('/', upload.single('file'), async (req, res) => {
+  const password = req.body.password;
+  const originalName = req.file.originalname;
+  const ext = path.extname(originalName).toLowerCase();
+  const inputPath = req.file.path;
+  const outputPath = inputPath + '-protected.pdf';
+
+  // ❌ Validation: Only PDFs
+  if (ext !== '.pdf') {
+    fs.unlinkSync(inputPath);
+    return res.status(400).send('❌ Only PDF files are supported');
+  }
+
+  // ❌ Validation: Password must be strong enough
+  if (!password || password.length < 3) {
+    fs.unlinkSync(inputPath);
+    return res.status(400).send('❌ Password must be at least 3 characters');
+  }
+
   try {
-    const form = new FormData();
-    form.append('pdf', fs.createReadStream(req.file.path));
-    form.append('keywords', req.body.keywords);
+    // ✅ Safely escape paths and use AES 256 encryption (recommended)
+    const safeInput = JSON.stringify(inputPath);
+    const safeOutput = JSON.stringify(outputPath);
+    const cmd = `qpdf --encrypt "${password}" "${password}" 256 -- ${safeInput} ${safeOutput}`;
 
-    const response = await axios.post(microserviceURL, form, {
-      headers: form.getHeaders(),
-      responseType: 'stream',
+    exec(cmd, (error) => {
+      if (error) {
+        console.error('🔴 qpdf error:', error);
+        if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+        return res.status(500).send('❌ Failed to protect PDF');
+      }
+
+      // ✅ Send back the protected file
+      res.setHeader('Content-Disposition', 'attachment; filename=protected.pdf');
+      res.contentType('application/pdf');
+      fs.createReadStream(outputPath).pipe(res);
+
+      // ♻️ Cleanup after a short delay
+      setTimeout(() => {
+        if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+        if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+      }, 5000);
     });
-
-    const contentType = response.headers['content-type'];
-    if (!contentType || !contentType.includes('application/pdf')) {
-      console.error('❌ Not a PDF. Received:', contentType);
-      let errorData = '';
-      response.data.on('data', (chunk) => errorData += chunk);
-      response.data.on('end', () => console.error('Microservice error:', errorData));
-      return res.status(500).send('Redaction microservice returned an invalid response.');
-    }
-
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=redacted.pdf');
-    response.data.pipe(res);
-
-    response.data.on('end', () => fs.unlinkSync(req.file.path));
   } catch (err) {
-    console.error('❌ Redact error:', err.message);
-    res.status(500).send('Failed to redact PDF.');
+    console.error('❌ Protect PDF Error:', err.message);
+    if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
+    res.status(500).send('❌ Internal server error');
   }
 });
 

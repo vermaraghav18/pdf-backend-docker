@@ -27,14 +27,13 @@ const organizePdfRoute = require('./routes/organizePdf');
 const repairPdfRoute = require('./routes/repairPdf');
 const addPageNumbersRoute = require('./routes/addPageNumbers');
 const redactPdfRoute = require('./routes/redactPdf');
-const protectPdfRoute = require('./routes/protectPdf');
 const unlockPdfRoute = require('./routes/unlockPdf');
 const cropPdfRoute = require('./routes/cropPdf');
 const signPdfRoute = require('./routes/signPdf');
 const watermarkPdfRoute = require('./routes/watermarkPdf');
-const pdfToJpgRoute = require('./routes/pdfToJpg');
 const jpgToPdfRoute = require('./routes/jpgToPdf');
-const convertPptToPdfRoute = require('./routes/convertPptToPdf');
+const protectPdfRoute = require('./routes/protectPdf');
+const convertPdfToJpgRoute = require('./routes/convertPdfToJpg');
 
 
 
@@ -77,13 +76,13 @@ app.use('/api/sign', signPdfRoute);
 console.log('✅ /api/sign mounted');
 app.use('/api/watermark', watermarkPdfRoute);
 console.log('✅ /api/watermark mounted');
-app.use('/api/pdf-to-jpg', pdfToJpgRoute);
+app.use('/api/pdf-to-jpg', convertPdfToJpgRoute);
 console.log('✅ /api/pdf-to-jpg mounted');
 app.use('/api/jpg-to-pdf', jpgToPdfRoute);
 console.log('✅ /api/jpg-to-pdf mounted');
 app.use('/api/word-to-pdf', convertWordToPdfRoute);
 console.log('✅ /api/word-to-pdf mounted');
-app.use('/api/ppt-to-pdf', convertPptToPdfRoute);
+app.use('/api/protect', protectPdfRoute);
 console.log('✅ /api/ppt-to-pdf mounted');
 
 
