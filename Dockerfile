@@ -1,37 +1,36 @@
-# ✅ Node.js with Python + LibreOffice
-FROM node:18-slim
+# ✅ Start with Python base (more compatible for pip builds)
+FROM python:3.10-slim
 
-# ✅ Install system deps
-RUN apt-get update && \
-    apt-get install -y \
-    qpdf \
-    libreoffice \
+# ✅ Install system dependencies
+RUN apt-get update && apt-get install -y \
     curl \
     gnupg \
+    qpdf \
+    libreoffice \
     poppler-utils \
-    python3 \
-    python3-pip \
-    python3-venv \
     build-essential \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    ca-certificates \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# ✅ Install Node.js (LTS version) manually
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm
 
-# ✅ Create working directory
+# ✅ Create app directory
 WORKDIR /app
 
-# ✅ Copy full project
+# ✅ Copy entire backend
 COPY . .
 
-# ✅ Install Node.js deps
+# ✅ Install Node.js dependencies
 RUN npm install
 
-# ✅ Install Python microservice deps
-RUN python3 -m pip install --upgrade pip && \
-    pip3 install --no-cache-dir -r ./excel-to-pdf-microservice/requirements.txt
+# ✅ Install Python dependencies for microservice
+RUN pip install --no-cache-dir -r ./excel-to-pdf-microservice/requirements.txt
 
-# ✅ Expose backend and microservice
+# ✅ Expose ports
 EXPOSE 10000 10009
 
-# ✅ Start both services
+# ✅ Start both servers
 CMD ["sh", "-c", "node server.js & uvicorn excel-to-pdf-microservice.main:app --host 0.0.0.0 --port 10009"]
