@@ -1,39 +1,33 @@
-# ✅ Debian base with Node.js + Python + LibreOffice
-FROM debian:bullseye-slim
+# ✅ Use official Node.js 18 base with Debian compatibility
+FROM node:18-slim
 
-# ✅ Install system dependencies
+# ✅ Install Python + LibreOffice + other tools
 RUN apt-get update && apt-get install -y \
-    curl \
-    gnupg \
-    ca-certificates \
-    build-essential \
-    software-properties-common \
     python3 \
     python3-pip \
     python3-venv \
-    nodejs \
-    npm \
     qpdf \
     libreoffice \
     poppler-utils \
+    curl \
     unzip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ✅ Set working directory
 WORKDIR /app
 
-# ✅ Copy all files
+# ✅ Copy project files
 COPY . .
 
-# ✅ Install Node.js backend dependencies
+# ✅ Install Node dependencies
 RUN npm install
 
-# ✅ Install Python microservice dependencies
+# ✅ Install Python dependencies for microservice
 RUN pip3 install --upgrade pip && \
     pip3 install --no-cache-dir -r ./excel-to-pdf-microservice/requirements.txt
 
-# ✅ Expose both ports
+# ✅ Expose backend + microservice ports
 EXPOSE 10000 10009
 
-# ✅ Start both: Node.js backend + Python microservice
+# ✅ Start both backend and FastAPI
 CMD ["sh", "-c", "node server.js & uvicorn excel-to-pdf-microservice.main:app --host 0.0.0.0 --port 10009"]
