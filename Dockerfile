@@ -12,8 +12,10 @@ RUN apt-get update && \
     python3 \
     python3-pip \
     python3-venv \
+    build-essential \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
 
 # ✅ Create working directory
 WORKDIR /app
@@ -25,7 +27,8 @@ COPY . .
 RUN npm install
 
 # ✅ Install Python microservice deps
-RUN pip3 install --no-cache-dir -r ./excel-to-pdf-microservice/requirements.txt
+RUN python3 -m pip install --upgrade pip && \
+    pip3 install --no-cache-dir -r ./excel-to-pdf-microservice/requirements.txt
 
 # ✅ Expose backend and microservice
 EXPOSE 10000 10009
