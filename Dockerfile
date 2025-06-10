@@ -1,27 +1,39 @@
-# ✅ Node.js base + tools only (no Python)
-FROM node:18-slim
+# ✅ Debian base with Node.js + Python + LibreOffice
+FROM debian:bullseye-slim
 
-# ✅ Install PDF tools only
+# ✅ Install system dependencies
 RUN apt-get update && apt-get install -y \
-    qpdf \
     curl \
     gnupg \
+    ca-certificates \
+    build-essential \
+    software-properties-common \
+    python3 \
+    python3-pip \
+    python3-venv \
+    nodejs \
+    npm \
+    qpdf \
+    libreoffice \
     poppler-utils \
     unzip \
-    ca-certificates \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ✅ Set workdir
+# ✅ Set working directory
 WORKDIR /app
 
-# ✅ Copy full backend project
+# ✅ Copy all files
 COPY . .
 
-# ✅ Install Node.js dependencies
+# ✅ Install Node.js backend dependencies
 RUN npm install
 
-# ✅ Expose backend port only
-EXPOSE 10000
+# ✅ Install Python microservice dependencies
+RUN pip3 install --upgrade pip && \
+    pip3 install --no-cache-dir -r ./excel-to-pdf-microservice/requirements.txt
 
-# ✅ Start Node backend only
-CMD ["node", "server.js"]
+# ✅ Expose both ports
+EXPOSE 10000 10009
+
+# ✅ Start both: Node.js backend + Python microservice
+CMD ["sh", "-c", "node server.js & uvicorn excel-to-pdf-microservice.main:app --host 0.0.0.0 --port 10009"]
