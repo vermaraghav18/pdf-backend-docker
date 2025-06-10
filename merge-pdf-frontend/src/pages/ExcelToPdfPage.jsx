@@ -1,32 +1,37 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import '../styles/ComponentStyles.css';
+import Lottie from 'lottie-react';
+import successTick from '../assets/successTick.json';
+import ExcelIcon from '../assets/icons/merge.png'; // Replace with Excel icon if available
+import '../styles/MergePdfPage.css'; // ✅ Reusing base styles
 
 function ExcelToPdfPage() {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
+  const [downloadUrl, setDownloadUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
+    setFile(e.target.files[0]);
     setMessage('');
+    setDownloadUrl('');
+    setShowAnimation(false);
   };
 
   const handleConvert = async () => {
-    if (!selectedFile) {
-      setMessage('❌ Please select an Excel file.');
+    if (!file) {
+      setMessage('❌ Please upload an Excel file');
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', selectedFile);
+    formData.append('file', file);
+
+    setLoading(true);
+    setMessage('🔄 Converting Excel to PDF...');
 
     try {
-      setLoading(true);
-
-      const baseUrl = import.meta.env.VITE_API_BASE_URL;
-      if (!baseUrl) throw new Error('VITE_API_BASE_URL is not defined.');
-
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/api/excel-to-pdf`,
         formData,
@@ -34,30 +39,61 @@ function ExcelToPdfPage() {
       );
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.download = selectedFile.name.replace(/\.(xlsx|xls)$/i, '.pdf');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      setMessage('✅ File converted and downloaded.');
+      const url = URL.createObjectURL(blob);
+      setDownloadUrl(url);
+      setShowAnimation(true);
+      setMessage('✅ Conversion successful!');
     } catch (error) {
-      setMessage('❌ Conversion failed.');
-      console.error('🛑 Excel to PDF error:', error);
+      console.error(error);
+      setMessage('❌ Conversion failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const reset = () => {
+    setFile(null);
+    setMessage('');
+    setDownloadUrl('');
+    setShowAnimation(false);
+    document.getElementById('excel-upload').value = '';
+  };
+
   return (
-    <div className="tool-container">
-      <h2>Convert Excel to PDF</h2>
-      <input type="file" accept=".xls,.xlsx" onChange={handleFileChange} />
-      <button onClick={handleConvert} disabled={loading}>
-        {loading ? 'Converting...' : 'Convert & Download'}
-      </button>
-      <p>{message}</p>
+    <div className="merge-container">
+      <h1 className="tool-title-text">📊 Excel to PDF Converter</h1>
+      <div className="background-blur">
+        <div className="blur-circle top-left"></div>
+        <div className="blur-circle bottom-right"></div>
+        <img src={ExcelIcon} alt="Excel Icon" className="background-tool-icon" />
+      </div>
+
+      <div className="upload-box">
+        <input id="excel-upload" type="file" accept=".xls,.xlsx" onChange={handleFileChange} />
+        <button onClick={handleConvert} disabled={loading}>
+          {loading ? 'Converting...' : 'Convert to PDF'}
+        </button>
+      </div>
+
+      {message && <p className="status-text">{message}</p>}
+
+      {showAnimation && (
+        <div className="success-animation">
+          <Lottie animationData={successTick} loop={false} />
+        </div>
+      )}
+
+      {downloadUrl && (
+        <a href={downloadUrl} download="converted.pdf" className="download-btn">
+          📥 Download PDF
+        </a>
+      )}
+
+      {(file || message || downloadUrl) && (
+        <button className="reset-btn" onClick={reset}>
+          🔁 Reset
+        </button>
+      )}
     </div>
   );
 }

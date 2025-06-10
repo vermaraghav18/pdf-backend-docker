@@ -1,95 +1,45 @@
+// routes/convertExcelToPdf.js
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const FormData = require('form-data');
-const axios = require('axios');
-const { uploadExcel } = require('./uploadMiddleware');
-require('dotenv').config();
+const { exec } = require('child_process');
+const { uploadExcel } = require('./uploadMiddleware'); // ✅ Use Excel-specific uploader
 
 const router = express.Router();
 
-router.post('/', uploadExcel.single('file'), async (req, res) => {
-  const filePath = req.file.path;
-  const apiKey = process.env.CLOUDCONVERT_API_KEY;
+router.post('/', uploadExcel.single('file'), (req, res) => {
+  if (!req.file) return res.status(400).send('❌ No file uploaded.');
 
-  if (!apiKey) {
-    return res.status(500).json({ error: 'CloudConvert API key is missing in .env' });
-  }
+  const inputPath = req.file.path;
+  const outputDir = path.dirname(inputPath); // safe temp dir like /tmp
+  const baseFilename = path.basename(req.file.originalname, path.extname(req.file.originalname));
+  const outputPath = path.join(outputDir, `${baseFilename}.pdf`);
 
-  try {
-    // 🔹 Step 1: Create a job
-    const jobRes = await axios.post(
-      'https://api.cloudconvert.com/v2/jobs',
-      {
-        tasks: {
-          'import-my-file': { operation: 'import/upload' },
-          'convert-my-file': {
-            operation: 'convert',
-            input: 'import-my-file',
-            input_format: 'xlsx',
-            output_format: 'pdf',
-            engine: 'office'
-          },
-          'export-my-file': {
-            operation: 'export/url',
-            input: 'convert-my-file'
-          }
-        }
-      },
-      { headers: { Authorization: `Bearer ${apiKey}` } }
-    );
+  const command = `libreoffice --headless --convert-to pdf --outdir ${outputDir} ${inputPath}`;
 
-    const jobId = jobRes.data.data.id;
-    const importTask = jobRes.data.data.tasks.find(t => t.name === 'import-my-file');
-    const uploadUrl = importTask.result.form.url;
-    const uploadParams = importTask.result.form.parameters;
+  exec(command, (err, stdout, stderr) => {
+    if (err) {
+      console.error('❌ LibreOffice error:', stderr || err.message);
+      return res.status(500).send('❌ Conversion failed.');
+    }
 
-    // 🔹 Step 2: Upload Excel file
-    const form = new FormData();
-    Object.entries(uploadParams).forEach(([key, value]) => form.append(key, value));
-    form.append('file', fs.createReadStream(filePath));
+    if (!fs.existsSync(outputPath)) {
+      console.error('❌ Converted file not found:', outputPath);
+      return res.status(500).send('❌ Converted file not found.');
+    }
 
-    await axios.post(uploadUrl, form, {
-      headers: form.getHeaders(),
-      maxBodyLength: Infinity,
-      maxContentLength: Infinity
+    res.download(outputPath, `${baseFilename}.pdf`, (err) => {
+      // Clean temp files regardless of download result
+      try {
+        fs.unlinkSync(inputPath);
+        fs.unlinkSync(outputPath);
+      } catch (cleanupErr) {
+        console.warn('⚠️ Cleanup warning:', cleanupErr.message);
+      }
+
+      if (err) console.error('❌ Download error:', err.message);
     });
-
-    // 🔹 Step 3: Poll job status
-    let exportedFileUrl = null;
-    for (let i = 0; i < 10; i++) {
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      const pollRes = await axios.get(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
-        headers: { Authorization: `Bearer ${apiKey}` }
-      });
-
-      const exportTask = pollRes.data.data.tasks.find(t => t.name === 'export-my-file');
-
-      if (exportTask.status === 'finished' && exportTask.result?.files?.[0]?.url) {
-        exportedFileUrl = exportTask.result.files[0].url;
-        break;
-      }
-
-      if (exportTask.status === 'error') {
-        throw new Error('❌ CloudConvert export task failed.');
-      }
-    }
-
-    if (!exportedFileUrl) {
-      return res.status(500).json({ error: 'Conversion timed out or failed.' });
-    }
-
-    // 🔹 Step 4: Stream PDF response
-    const fileStream = await axios.get(exportedFileUrl, { responseType: 'stream' });
-    res.setHeader('Content-Disposition', 'attachment; filename=converted.pdf');
-    fileStream.data.pipe(res);
-  } catch (err) {
-    console.error('🔴 Excel to PDF Error:', err.response?.data || err.message);
-    res.status(500).json({ error: '❌ Conversion failed.' });
-  } finally {
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-  }
+  });
 });
 
 module.exports = router;
