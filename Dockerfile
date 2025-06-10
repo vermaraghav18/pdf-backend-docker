@@ -1,30 +1,32 @@
-# ================================
-# Dockerfile for PDF Tools (Node.js only)
-# Supports QPDF + LibreOffice + PDF tools
-# ================================
-
+# === Base: Node.js with Python + LibreOffice support ===
 FROM node:18-slim
 
-# Install PDF tool dependencies
+# 📦 Install system dependencies (LibreOffice + Python + pip)
 RUN apt-get update && \
-    apt-get install -y qpdf libreoffice curl gnupg poppler-utils && \
-    apt-get clean && \
+    apt-get install -y \
+    libreoffice \
+    python3 \
+    python3-pip \
+    curl \
+    gnupg \
+    poppler-utils \
+    && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+# 📁 Create working directory for app
 WORKDIR /app
 
-# Copy full project
+# 📁 Copy full backend-only/ project
 COPY . .
 
-# Install Node.js dependencies
+# 📦 Install Node.js dependencies
 RUN npm install
 
-# Optional: environment variable for Render
-ENV RENDER=true
+# 🐍 Install Python dependencies for microservice
+RUN pip3 install --no-cache-dir -r ./excel-to-pdf-microservice/requirements.txt
 
-# Expose backend port
-EXPOSE 10000
+# 🌐 Expose Node backend + microservice port
+EXPOSE 10000 10009
 
-# Start the backend server
-CMD ["node", "server.js"]
+# 🚀 Run Node.js and Python servers concurrently
+CMD ["sh", "-c", "node server.js & uvicorn excel-to-pdf-microservice.main:app --host 0.0.0.0 --port 10009"]
