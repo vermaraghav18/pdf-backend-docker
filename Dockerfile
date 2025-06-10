@@ -1,36 +1,41 @@
-# ✅ Start with Python base (more compatible for pip builds)
-FROM python:3.10-slim
+# ✅ Debian base to support full build tools + node + python
+FROM debian:bullseye-slim
 
 # ✅ Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     gnupg \
+    ca-certificates \
+    build-essential \
+    software-properties-common \
+    python3 \
+    python3-pip \
+    python3-venv \
     qpdf \
     libreoffice \
     poppler-utils \
-    build-essential \
-    ca-certificates \
+    unzip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ✅ Install Node.js (LTS version) manually
+# ✅ Install Node.js 18.x manually
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install -g npm
+    apt-get install -y nodejs
 
-# ✅ Create app directory
+# ✅ Set workdir
 WORKDIR /app
 
-# ✅ Copy entire backend
+# ✅ Copy full backend project
 COPY . .
 
-# ✅ Install Node.js dependencies
+# ✅ Install Node dependencies
 RUN npm install
 
-# ✅ Install Python dependencies for microservice
-RUN pip install --no-cache-dir -r ./excel-to-pdf-microservice/requirements.txt
+# ✅ Install Python microservice dependencies
+RUN pip3 install --upgrade pip && \
+    pip3 install --no-cache-dir -r ./excel-to-pdf-microservice/requirements.txt
 
 # ✅ Expose ports
 EXPOSE 10000 10009
 
-# ✅ Start both servers
+# ✅ Start both Node and FastAPI servers
 CMD ["sh", "-c", "node server.js & uvicorn excel-to-pdf-microservice.main:app --host 0.0.0.0 --port 10009"]
