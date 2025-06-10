@@ -1,32 +1,34 @@
-# === Base: Node.js with Python + LibreOffice support ===
+# ✅ Node.js with Python + LibreOffice
 FROM node:18-slim
 
-# 📦 Install system dependencies (LibreOffice + Python + pip)
+# ✅ Install system deps
 RUN apt-get update && \
     apt-get install -y \
+    qpdf \
     libreoffice \
-    python3 \
-    python3-pip \
     curl \
     gnupg \
     poppler-utils \
+    python3 \
+    python3-pip \
+    python3-venv \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# 📁 Create working directory for app
+# ✅ Create working directory
 WORKDIR /app
 
-# 📁 Copy full backend-only/ project
+# ✅ Copy full project
 COPY . .
 
-# 📦 Install Node.js dependencies
+# ✅ Install Node.js deps
 RUN npm install
 
-# 🐍 Install Python dependencies for microservice
+# ✅ Install Python microservice deps
 RUN pip3 install --no-cache-dir -r ./excel-to-pdf-microservice/requirements.txt
 
-# 🌐 Expose Node backend + microservice port
+# ✅ Expose backend and microservice
 EXPOSE 10000 10009
 
-# 🚀 Run Node.js and Python servers concurrently
+# ✅ Start both services
 CMD ["sh", "-c", "node server.js & uvicorn excel-to-pdf-microservice.main:app --host 0.0.0.0 --port 10009"]
